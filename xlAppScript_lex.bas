@@ -1,9 +1,9 @@
 Attribute VB_Name = "xlAppScript_lex"
-Public Function lexKey(xArt) As Byte
+Public Function lexKey(ByVal xArt As String) As Byte
 '/\______________________________________________________________________________________________________________________
 '//
 '//     xlAppScript Lexer
-'//        Version: 1.0.8
+'//        Version: 1.1.0
 '/\_____________________________________________________________________________________________________________________________
 '//
 '//     License Information:
@@ -25,7 +25,7 @@ Public Function lexKey(xArt) As Byte
 '//
 '/\_____________________________________________________________________________________________________________________________
 '//
-'//     Latest Revision: 4/23/2022
+'//     Latest Revision: 5/11/2022
 '/\_____________________________________________________________________________________________________________________________
 '//
 '//     Developer(s): anz7re
@@ -35,14 +35,14 @@ Public Function lexKey(xArt) As Byte
 '//
 '//
 '//Lexer variables...
-Dim mPtr As Long: Dim cPtr As Long: Dim xPtr As Long: Dim xPtrCl As Long: Dim R As Long: Dim X As Long
-Dim appEnv As String: Dim appBlk As String: Dim xArtArr() As String: Dim xArtArrCl() As String: Dim xArtCl As String
+Dim mPtr As Long: Dim cPtr As Long: Dim xPtr As Long: Dim xPtrH As Long: Dim R As Long: Dim X As Long
+Dim appEnv As String: Dim appBlk As String: Dim xArtArr() As String: Dim xArtArrH() As String: Dim xArtH As String
 Dim xKinArr() As String: Dim xPArr() As String: Dim xPtrArr() As String: Dim tArr() As String: Dim FocusInstruct(4) As String
 Dim lRow As Integer
 Dim C As Byte: Dim E As Byte
-C = 0: mPtr = 0: cPtr = 0: xPtr = 0: xPtrCl = 0: R = 0: X = 0
+C = 0: mPtr = 0: cPtr = 0: xPtr = 0: xPtrH = 0: R = 0: X = 0
 '//Find current run tool...
-Dim xTool As Object: Call findRunTool(xTool)
+Dim xTool As Object: Call fndRunTool(xTool)
 '//=============================================================
 '//Set Article from run tool code...
 If Not xTool Is Nothing Then If xArt = vbNullString Then xArt = xTool.Value
@@ -61,13 +61,13 @@ Call modBlk(xArt)
 Call escSpecial(xArt)
 xArt = Replace(xArt, vbNewLine, vbNullString)
 xArt = Replace(xArt, vbTab, vbNullString)
-xArtArr = Split(xArt, ";"): xArtArrCl = Split(xArt, ";")
+xArtArr = Split(xArt, ";"): xArtArrH = Split(xArt, ";")
 '//=============================================================
 Do Until xPtr = UBound(xArtArr)
 
 If InStr(1, xArtArr(xPtr), "~") = False Then
 If InStr(1, xArtArr(xPtr), "*/") Then xArt = xArtArr(xPtr): _
-xArtCl = xArt: Call rtnSpecial(xArt): xArtArr(xPtr) = xArt:
+xArtH = xArt: Call rtnSpecial(xArt): xArtArr(xPtr) = xArt:
 '//=============================================================
 '//Check for application runtime environment...
 If InStr(1, xArtArr(xPtr), "<env>", vbTextCompare) Then
@@ -106,40 +106,40 @@ lRow = Cells(Rows.Count, "MAA").End(xlUp).Row
     
     For R = 0 To lRow
     
-    If Range("xlasKinLabel").Offset(R, 0).Value = xKinArr(0) Then
+    If Range("xlasKinLabel").Offset(R, 0).Value2 = xKinArr(0) Then
     xKinArr(0) = Replace(xKinArr(0), " ", vbNullString)
-    Range("xlasKinLabelMod").Offset(R, 0).Value = "@" & xKinArr(0)
-    Range("xlasKinValueMod").Offset(R, 0).Value = xKinArr(1)
-    Range("xlasKinLabel").Offset(R, 0).Value = "@" & xKinArr(0)
-    Range("xlasKinValue").Offset(R, 0).Value = xKinArr(1)
+    Range("xlasKinLabelMod").Offset(R, 0).Value2 = "@" & xKinArr(0)
+    Range("xlasKinValueMod").Offset(R, 0).Value2 = xKinArr(1)
+    Range("xlasKinLabel").Offset(R, 0).Value2 = "@" & xKinArr(0)
+    Range("xlasKinValue").Offset(R, 0).Value2 = xKinArr(1)
     xArtArr(xPtr) = "#" & xArtArr(xPtr)
     GoTo NextVar
     Else
         End If
             Next R
             R = 0
-            If Range("xlasKinLabel").Offset(R, 0).Value <> "" Then
+            If Range("xlasKinLabel").Offset(R, 0).Value2 <> "" Then
             Do Until R = lRow: R = R + 1: Loop: End If
             xKinArr(0) = Replace(xKinArr(0), " ", vbNullString)
-            Range("xlasKinLabelMod").Offset(R, 0).Value = "@" & xKinArr(0)
+            Range("xlasKinLabelMod").Offset(R, 0).Value2 = "@" & xKinArr(0)
             If xKinArr(1) = vbNullString Then xKinArr(1) = "@" & xKinArr(0)
-            Range("xlasKinValueMod").Offset(R, 0).Value = xKinArr(1)
-            Range("xlasKinLabel").Offset(R, 0).Value = "@" & xKinArr(0)
-            Range("xlasKinValue").Offset(R, 0).Value = xKinArr(1)
+            Range("xlasKinValueMod").Offset(R, 0).Value2 = xKinArr(1)
+            Range("xlasKinLabel").Offset(R, 0).Value2 = "@" & xKinArr(0)
+            Range("xlasKinValue").Offset(R, 0).Value2 = xKinArr(1)
             xArtArr(xPtr) = "#" & xArtArr(xPtr)
-            xArtCl = "#"
+            xArtH = "#"
             
 NextVar:
                 End If
                     End If
-                    If xArtCl <> vbNullString Then xArtArr(xPtr) = xArtCl: xArtCl = vbNullString
+                    If xArtH <> vbNullString Then xArtArr(xPtr) = xArtH: xArtH = vbNullString
                     xArtArr(xPtr) = Replace(xArtArr(xPtr), "~", ";")
                     xPtr = xPtr + 1
                     Loop
                     
 '//=============================================================
 '//Set runtime environment...
-Call findEnvironment(appEnv, appBlk)
+Call fndEnvironment(appEnv, appBlk)
 '//=============================================================
 '//Record...
 xPtr = 0
@@ -148,9 +148,9 @@ xArt = xArtArr(xPtr)
     If xArt <> "" Then '//Check for empty...
     If InStr(1, xArt, "#") = False Then '//Check for comment...
     '//Record state(s) to memory location...
-    Workbooks(appEnv).Worksheets(appBlk).Range("xlasState").Offset(xPtr, 0).Value = xPtr
+    Workbooks(appEnv).Worksheets(appBlk).Range("xlasState").Offset(xPtr, 0).Value2 = xPtr
     '//Record Article(s) to memory location...
-    Workbooks(appEnv).Worksheets(appBlk).Range("xlasArticle").Offset(xPtr, 0).Value = xArt
+    Workbooks(appEnv).Worksheets(appBlk).Range("xlasArticle").Offset(xPtr, 0).Value2 = xArt
     End If
         End If
             xPtr = xPtr + 1
@@ -158,14 +158,14 @@ xArt = xArtArr(xPtr)
 '//=============================================================
 '//Run check...
 xPtr = 0
-xPtrCl = 0
+xPtrH = 0
 RunCheck:
 Do Until xPtr >= UBound(xArtArr)
 If mPtr > xPtr Then xPtr = mPtr
-If Workbooks(appEnv).Worksheets(appBlk).Range("xlasEnd").Value = 1 Then _
-Workbooks(appEnv).Worksheets(appBlk).Range("xlasEnd").Value = 0: GoTo EndArticle '//Check for end...
-If Workbooks(appEnv).Worksheets(appBlk).Range("xlasGoto").Value <> vbNullString Then xPtr = Range("xlasGoto").Value + 1: _
-Workbooks(appEnv).Worksheets(appBlk).Range("xlasGoto").Value = vbNullString: mPtr = xPtr '//Check for redirection...
+If Workbooks(appEnv).Worksheets(appBlk).Range("xlasEnd").Value2 = 1 Then _
+Workbooks(appEnv).Worksheets(appBlk).Range("xlasEnd").Value2 = 0: GoTo EndArticle '//Check for end...
+If Workbooks(appEnv).Worksheets(appBlk).Range("xlasGoto").Value2 <> vbNullString Then xPtr = Range("xlasGoto").Value2 + 1: _
+Workbooks(appEnv).Worksheets(appBlk).Range("xlasGoto").Value2 = vbNullString: mPtr = xPtr '//Check for redirection...
 
 xArt = xArtArr(xPtr)
 
@@ -196,38 +196,38 @@ Next
 '//=============================================================
     '//goto check...
     If C = 1 Then xArtArr(xPtr) = xArt: xArt = vbNullString: For X = 0 To UBound(xArtArr): xArt = xArt & xArtArr(X) & "[:]": Next: _
-    xArt = xArt & "[,]" & xPtr & "[,]" & xPtrCl & "[,]" & mPtr & "[,]" & cPtr: _
+    xArt = xArt & "[,]" & xPtr & "[,]" & xPtrH & "[,]" & mPtr & "[,]" & cPtr: _
     E = 0: Call gotoSet(xArt, E): tArr = Split(xArt, "[:]"): xArt = tArr(0): _
-    xPtrArr = Split(tArr(1), "[,]"): xPtr = xPtrArr(1): xPtrCl = xPtrArr(2): mPtr = xPtrArr(3): cPtr = xPtrArr(4): _
-    C = 0: xArtArr(xPtr) = xArtArrCl(xPtr): GoTo RunCheck
+    xPtrArr = Split(tArr(1), "[,]"): xPtr = xPtrArr(1): xPtrH = xPtrArr(2): mPtr = xPtrArr(3): cPtr = xPtrArr(4): _
+    C = 0: xArtArr(xPtr) = xArtArrH(xPtr): GoTo RunCheck
     '//=============================================================
     '//if check...
     If C = 3 Then xArtArr(xPtr) = xArt: xArt = vbNullString: For X = 0 To UBound(xArtArr): xArt = xArt & xArtArr(X) & "[:]": Next: _
-    xArt = xArt & "[,]" & xPtr & "[,]" & xPtrCl & "[,]" & mPtr & "[,]" & cPtr: _
+    xArt = xArt & "[,]" & xPtr & "[,]" & xPtrH & "[,]" & mPtr & "[,]" & cPtr: _
     E = 0: Call ifSet(xArt, E): tArr = Split(xArt, "[:]"): xArt = tArr(0): _
-    xPtrArr = Split(tArr(1), "[,]"): xPtr = xPtrArr(1): xPtrCl = xPtrArr(2): mPtr = xPtrArr(3): cPtr = xPtrArr(4): _
-    C = 0: xArtArr(xPtr) = xArtArrCl(xPtr): GoTo ParseCheck
+    xPtrArr = Split(tArr(1), "[,]"): xPtr = xPtrArr(1): xPtrH = xPtrArr(2): mPtr = xPtrArr(3): cPtr = xPtrArr(4): _
+    C = 0: xArtArr(xPtr) = xArtArrH(xPtr): GoTo ParseCheck
     '//=============================================================
     '//do check...
     If C = 5 Then xArtArr(xPtr) = xArt: xArt = vbNullString: For X = 0 To UBound(xArtArr): xArt = xArt & xArtArr(X) & "[:]": Next: _
-    xArt = xArt & "[,]" & xPtr & "[,]" & xPtrCl & "[,]" & mPtr & "[,]" & cPtr: _
+    xArt = xArt & "[,]" & xPtr & "[,]" & xPtrH & "[,]" & mPtr & "[,]" & cPtr: _
     E = 0: Call doSet(xArt, E): tArr = Split(xArt, "[:]"): xArt = tArr(0): _
-    xPtrArr = Split(tArr(1), "[,]"): xPtr = xPtrArr(1): xPtrCl = xPtrArr(2): mPtr = xPtrArr(3): cPtr = xPtrArr(4): _
-    C = 0: xArtArr(xPtr) = xArtArrCl(xPtr): GoTo ParseCheck
+    xPtrArr = Split(tArr(1), "[,]"): xPtr = xPtrArr(1): xPtrH = xPtrArr(2): mPtr = xPtrArr(3): cPtr = xPtrArr(4): _
+    C = 0: xArtArr(xPtr) = xArtArrH(xPtr): GoTo ParseCheck
     '//=============================================================
     '//libcall check...
     If C = 9 Then xArtArr(xPtr) = xArt: xArt = vbNullString: For X = 0 To UBound(xArtArr): xArt = xArt & xArtArr(X) & "[:]": Next: _
     xArt = xArt & "[,]" & xPtr & "[,]" & xPtr & "[,]" & mPtr & "[,]" & cPtr: _
     E = 0: Call libcallSet(xArt, E): tArr = Split(xArt, "[:]"): xArt = tArr(0): _
-    xPtrArr = Split(tArr(1), "[,]"): xPtr = xPtrArr(1): xPtrCl = xPtrArr(2): mPtr = xPtrArr(3): cPtr = xPtrArr(4): _
-    C = 0: xArtArr(xPtr) = xArtArrCl(xPtr): GoTo ParseCheck
+    xPtrArr = Split(tArr(1), "[,]"): xPtr = xPtrArr(1): xPtrH = xPtrArr(2): mPtr = xPtrArr(3): cPtr = xPtrArr(4): _
+    C = 0: xArtArr(xPtr) = xArtArrH(xPtr): GoTo ParseCheck
     '//=============================================================
     '//let check...
     If C = 11 Then xArtArr(xPtr) = xArt: xArt = vbNullString: For X = 0 To UBound(xArtArr): xArt = xArt & xArtArr(X) & "[:]": Next: _
     xArt = xArt & "[,]" & xPtr & "[,]" & mPtr & "[,]" & mPtr & "[,]" & cPtr: _
     E = 0: Call letSet(xArt, E): tArr = Split(xArt, "[:]"): xArt = tArr(0): _
-    xPtrArr = Split(tArr(1), "[,]"): xPtr = xPtrArr(1): xPtrCl = xPtrArr(2): mPtr = xPtrArr(3): cPtr = xPtrArr(4): _
-    C = 0: xArtArr(xPtr) = xArtArrCl(xPtr): GoTo ParseCheck
+    xPtrArr = Split(tArr(1), "[,]"): xPtr = xPtrArr(1): xPtrH = xPtrArr(2): mPtr = xPtrArr(3): cPtr = xPtrArr(4): _
+    C = 0: xArtArr(xPtr) = xArtArrH(xPtr): GoTo ParseCheck
     '//=============================================================
     '//end check...
     If C = 99 Then xArtArr(xPtr) = xArt: Call endSet(xArt): GoTo RunCheck
@@ -243,21 +243,21 @@ Next
         End If
             mPtr = mPtr + 1
             xPtr = xPtr + 1
-            xPtrCl = xPtr
+            xPtrH = xPtr
                     Loop
     
 EndArticle:
     On Error Resume Next
     If xTool <> Empty Then
     xTool.Value = Replace(xTool.Value, "$", vbNullString) '//remove run initializer...
-    If Range("xlasInvert").Value <> 2 Then xTool.ForeColor = vbBlack '//set text color back to default...
+    If Range("xlasInvert").Value2 <> 2 Then xTool.ForeColor = vbBlack '//set text color back to default...
     Err.Clear
     End If
     Exit Function
 '//=============================================================
 '//Error...
 EndMacro:
-If Workbooks(appEnv).Worksheets(appBlk).Range("xlasWinForm").Value <> "" Then Workbooks(appEnv).Worksheets(appBlk).Range("xlasEnd").Value = 1
+If Workbooks(appEnv).Worksheets(appBlk).Range("xlasWinForm").Value2 <> "" Then Workbooks(appEnv).Worksheets(appBlk).Range("xlasEnd").Value2 = 1
 If xTool <> "" Then xTool.Value = Replace(xTool.Value, "$", vbNullString): xTool.ForeColor = vbRed '//remove run initializer & set text to red...
                                 End If
                                     End If
@@ -274,56 +274,56 @@ Public Function kinSet$(xArt)
 Dim X As Long
 '//Find application environment & block
 Dim appEnv, appBlk As String
-Call findEnvironment(appEnv, appBlk)
+Call fndEnvironment(appEnv, appBlk)
 
         lRow = Workbooks(appEnv).Worksheets(appBlk).Cells(Rows.Count, "MAA").End(xlUp).Row
         
         For X = 0 To lRow
 reKin:
-        If InStr(1, xArt, Workbooks(appEnv).Worksheets(appBlk).Range("xlasKinLabel").Offset(X, 0).Value, vbTextCompare) Then
-        If InStr(1, xArt, "@env", vbTextCompare) Then Call findEnvironmentVars(xArt) '//environment variable check
+        If InStr(1, xArt, Workbooks(appEnv).Worksheets(appBlk).Range("xlasKinLabel").Offset(X, 0).Value2, vbTextCompare) Then
+        If InStr(1, xArt, "@env", vbTextCompare) Then Call fndEnvironmentVars(xArt) '//environment variable check
     
-                        If Workbooks(appEnv).Worksheets(appBlk).Range("xlasKinValueMod").Offset(X, 0).Value <> vbNullString Or _
+                        If Workbooks(appEnv).Worksheets(appBlk).Range("xlasKinValueMod").Offset(X, 0).Value2 <> vbNullString Or _
                         InStr(1, xArt, "=") Then
                         
                         '//null variable
-                        If Workbooks(appEnv).Worksheets(appBlk).Range("xlasKinValueMod").Offset(X, 0).Value = vbNullString Then _
-                        Workbooks(appEnv).Worksheets(appBlk).Range("xlasKinValueMod").Offset(X, 0).Value = _
-                        Workbooks(appEnv).Worksheets(appBlk).Range("xlasKinLabel").Offset(X, 0).Value: _
-                        Workbooks(appEnv).Worksheets(appBlk).Range("xlasKinValue").Offset(X, 0).Value = _
-                        Workbooks(appEnv).Worksheets(appBlk).Range("xlasKinLabel").Offset(X, 0).Value
+                        If Workbooks(appEnv).Worksheets(appBlk).Range("xlasKinValueMod").Offset(X, 0).Value2 = vbNullString Then _
+                        Workbooks(appEnv).Worksheets(appBlk).Range("xlasKinValueMod").Offset(X, 0).Value2 = _
+                        Workbooks(appEnv).Worksheets(appBlk).Range("xlasKinLabel").Offset(X, 0).Value2: _
+                        Workbooks(appEnv).Worksheets(appBlk).Range("xlasKinValue").Offset(X, 0).Value2 = _
+                        Workbooks(appEnv).Worksheets(appBlk).Range("xlasKinLabel").Offset(X, 0).Value2
                         End If
                         
                         If InStr(1, xArt, "=") = False Then
-                        xArt = Replace(xArt, Workbooks(appEnv).Worksheets(appBlk).Range("xlasKinLabel").Offset(X, 0).Value, _
-                        Workbooks(appEnv).Worksheets(appBlk).Range("xlasKinValueMod").Offset(X, 0).Value, vbTextCompare)
+                        xArt = Replace(xArt, Workbooks(appEnv).Worksheets(appBlk).Range("xlasKinLabel").Offset(X, 0).Value2, _
+                        Workbooks(appEnv).Worksheets(appBlk).Range("xlasKinValueMod").Offset(X, 0).Value2, vbTextCompare)
                         xArt = appEnv & ",#!" & xArt & ",#!" & X & ",#!" & 0: Call kinExpand(xArt)
                         Else
                         xArt = appEnv & ",#!" & xArt & ",#!" & X & ",#!" & 0: Call kinExpand(xArt)
-                        If Workbooks(appEnv).Worksheets(appBlk).Range("xlasKinValue").Offset(X, 0).Value <> _
-                        Workbooks(appEnv).Worksheets(appBlk).Range("xlasKinLabel").Offset(X, 0).Value Or _
+                        If Workbooks(appEnv).Worksheets(appBlk).Range("xlasKinValue").Offset(X, 0).Value2 <> _
+                        Workbooks(appEnv).Worksheets(appBlk).Range("xlasKinLabel").Offset(X, 0).Value2 Or _
                         InStr(1, xArt, "(@") Or InStr(1, xArt, " @") Then
                         If InStr(1, xArt, "(@") Or InStr(1, xArt, " @") Then
                         Call modArtP(xArt)
                             xArtArr = Split(xArt, "(@")
-                        If InStr(1, "@" & xArtArr(UBound(xArtArr)), Workbooks(appEnv).Worksheets(appBlk).Range("xlasKinLabel").Offset(X, 0).Value, vbTextCompare) Then
-                        xArt = Replace(xArt, Workbooks(appEnv).Worksheets(appBlk).Range("xlasKinLabel").Offset(X, 0).Value, _
-                        Workbooks(appEnv).Worksheets(appBlk).Range("xlasKinValueMod").Offset(X, 0).Value, vbTextCompare)
+                        If InStr(1, "@" & xArtArr(UBound(xArtArr)), Workbooks(appEnv).Worksheets(appBlk).Range("xlasKinLabel").Offset(X, 0).Value2, vbTextCompare) Then
+                        xArt = Replace(xArt, Workbooks(appEnv).Worksheets(appBlk).Range("xlasKinLabel").Offset(X, 0).Value2, _
+                        Workbooks(appEnv).Worksheets(appBlk).Range("xlasKinValueMod").Offset(X, 0).Value2, vbTextCompare)
                                 End If
                                 Else
                             End If
                         Else
                         If InStr(1, xArt, "=") = False Or InStr(1, xArt, "[@") Then
-                        xArt = Replace(xArt, Workbooks(appEnv).Worksheets(appBlk).Range("xlasKinLabel").Offset(X, 0).Value, _
-                        Workbooks(appEnv).Worksheets(appBlk).Range("xlasKinValueMod").Offset(X, 0).Value, vbTextCompare)
+                        xArt = Replace(xArt, Workbooks(appEnv).Worksheets(appBlk).Range("xlasKinLabel").Offset(X, 0).Value2, _
+                        Workbooks(appEnv).Worksheets(appBlk).Range("xlasKinValueMod").Offset(X, 0).Value2, vbTextCompare)
                         End If
                             End If
                                 End If
                                 
                     Else
                     
-                        xArt = Replace(xArt, Workbooks(appEnv).Worksheets(appBlk).Range("xlasKinLabel").Offset(X, 0).Value, _
-                        Workbooks(appEnv).Worksheets(appBlk).Range("xlasKinValueMod").Offset(X, 0).Value, vbTextCompare)
+                        xArt = Replace(xArt, Workbooks(appEnv).Worksheets(appBlk).Range("xlasKinLabel").Offset(X, 0).Value2, _
+                        Workbooks(appEnv).Worksheets(appBlk).Range("xlasKinValueMod").Offset(X, 0).Value2, vbTextCompare)
                         
                         If InStr(1, xArt, "@") Then X = X + 1: GoTo reKin
                         xArt = appEnv & ",#!" & xArt & ",#!" & X & ",#!" & 0: Call kinExpand(xArt)
@@ -348,7 +348,7 @@ Public Function kinExpand$(xArt)
         Dim E As Byte
         xTest = xArt
         Dim appEnv, appBlk As String
-        Call findEnvironment(appEnv, appBlk)
+        Call fndEnvironment(appEnv, appBlk)
         
         '//extract...
         xTestArr = Split(xTest, ",#!")
@@ -374,20 +374,20 @@ Public Function kinExpand$(xArt)
         Workbooks(appEnv).Worksheets(appBlk).Range("xlasKinValueMod").Offset(X, 0) = xArt: Exit Function
         '//Equal
         If InStr(1, xArt, "==") Then
-        If InStr(1, Workbooks(appEnv).Worksheets(appBlk).Range("xlasKinLabel").Offset(X, 0).Value, xArtArr(0)) Then
+        If InStr(1, Workbooks(appEnv).Worksheets(appBlk).Range("xlasKinLabel").Offset(X, 0).Value2, xArtArr(0)) Then
         If InStr(1, xArtArr(2), "@") Then
         xBlk = Cells(Rows.Count, "MAA").End(xlUp).Row
         For xPos = 0 To xBlk
-        If InStr(1, Workbooks(appEnv).Worksheets(appBlk).Range("xlasKinLabel").Offset(xPos, 0).Value, xArtArr(0)) Then
-        Workbooks(appEnv).Worksheets(appBlk).Range("xlasKinValueMod").Offset(xPos, 0).Value = _
-        Workbooks(appEnv).Worksheets(appBlk).Range("xlasKinValueMod").Offset(Range("xlasBlkAddr279").Value, 0).Value
-        ElseIf InStr(1, Workbooks(appEnv).Worksheets(appBlk).Range("xlasKinLabel").Offset(xPos, 0).Value, xArtArr(2)) Then
-        Workbooks(appEnv).Worksheets(appBlk).Range("xlasBlkAddr279").Value = xPos
+        If InStr(1, Workbooks(appEnv).Worksheets(appBlk).Range("xlasKinLabel").Offset(xPos, 0).Value2, xArtArr(0)) Then
+        Workbooks(appEnv).Worksheets(appBlk).Range("xlasKinValueMod").Offset(xPos, 0).Value2 = _
+        Workbooks(appEnv).Worksheets(appBlk).Range("xlasKinValueMod").Offset(Range("xlasBlkAddr279").Value2, 0).Value
+        ElseIf InStr(1, Workbooks(appEnv).Worksheets(appBlk).Range("xlasKinLabel").Offset(xPos, 0).Value2, xArtArr(2)) Then
+        Workbooks(appEnv).Worksheets(appBlk).Range("xlasBlkAddr279").Value2 = xPos
             End If
         Next
         xArt = "#": Exit Function
             End If
-        Workbooks(appEnv).Worksheets(appBlk).Range("xlasKinValueMod").Offset(X, 0).Value = xArtArr(2)
+        Workbooks(appEnv).Worksheets(appBlk).Range("xlasKinValueMod").Offset(X, 0).Value2 = xArtArr(2)
         xArt = "#": Exit Function
                     End If
                             End If
@@ -405,25 +405,25 @@ If UBound(xArtArr) <= 0 Then Exit Function
         '//String variable expansion
         '//
         For EX = 0 To X
-        If InStr(1, Workbooks(appEnv).Worksheets(appBlk).Range("xlasKinLabel").Offset(EX, 0).Value, xArtArr(0), vbTextCompare) Then '//check for variable in memory
+        If InStr(1, Workbooks(appEnv).Worksheets(appBlk).Range("xlasKinLabel").Offset(EX, 0).Value2, xArtArr(0), vbTextCompare) Then '//check for variable in memory
     
-        If Workbooks(appEnv).Worksheets(appBlk).Range("xlasKinValueMod").Offset(EX, 0).Value = vbNullString Or _
-        Workbooks(appEnv).Worksheets(appBlk).Range("xlasKinLabel").Offset(EX, 0).Value = xArtArr(0) Then
+        If Workbooks(appEnv).Worksheets(appBlk).Range("xlasKinValueMod").Offset(EX, 0).Value2 = vbNullString Or _
+        Workbooks(appEnv).Worksheets(appBlk).Range("xlasKinLabel").Offset(EX, 0).Value2 = xArtArr(0) Then
         End If
         
         Else
         
-        If Workbooks(appEnv).Worksheets(appBlk).Range("xlasKinLabel").Offset(EX, 0).Value = xArtArr(0) Then
+        If Workbooks(appEnv).Worksheets(appBlk).Range("xlasKinLabel").Offset(EX, 0).Value2 = xArtArr(0) Then
         E = 2
-        Workbooks(appEnv).Worksheets(appBlk).Range("xlasKinValueMod").Offset(EX, 0).Value = xTest '//replace value in memory
-        xArtArr(0) = Replace(xTest, Workbooks(appEnv).Worksheets(appBlk).Range("xlasKinLabel").Offset(EX, 0).Value, _
-        Workbooks(appEnv).Worksheets(appBlk).Range("xlasKinValueMod").Offset(EX, 0).Value, vbTextCompare)
+        Workbooks(appEnv).Worksheets(appBlk).Range("xlasKinValueMod").Offset(EX, 0).Value2 = xTest '//replace value in memory
+        xArtArr(0) = Replace(xTest, Workbooks(appEnv).Worksheets(appBlk).Range("xlasKinLabel").Offset(EX, 0).Value2, _
+        Workbooks(appEnv).Worksheets(appBlk).Range("xlasKinValueMod").Offset(EX, 0).Value2, vbTextCompare)
         End If
             End If
             
-            If InStr(1, xArtArr(0), Workbooks(appEnv).Worksheets(appBlk).Range("xlasKinLabel").Offset(EX, 0).Value, vbTextCompare) Then
-            xArtArr(0) = Replace(xArtArr(0), Workbooks(appEnv).Worksheets(appBlk).Range("xlasKinLabel").Offset(EX, 0).Value, _
-            Workbooks(appEnv).Worksheets(appBlk).Range("xlasKinValueMod").Offset(EX, 0).Value, vbTextCompare)
+            If InStr(1, xArtArr(0), Workbooks(appEnv).Worksheets(appBlk).Range("xlasKinLabel").Offset(EX, 0).Value2, vbTextCompare) Then
+            xArtArr(0) = Replace(xArtArr(0), Workbooks(appEnv).Worksheets(appBlk).Range("xlasKinLabel").Offset(EX, 0).Value2, _
+            Workbooks(appEnv).Worksheets(appBlk).Range("xlasKinValueMod").Offset(EX, 0).Value2, vbTextCompare)
             End If
             
             Next
@@ -442,23 +442,23 @@ X = Cells(Rows.Count, "MAA").End(xlUp).Row
         '//
         If InStr(1, xTest, "@") Then
         For EX = 0 To X
-        If InStr(1, xArtArr(1), Workbooks(appEnv).Worksheets(appBlk).Range("xlasKinLabel").Offset(EX, 0).Value, vbTextCompare) Then xPos = EX
-        If InStr(1, xArtArr(0), Workbooks(appEnv).Worksheets(appBlk).Range("xlasKinLabel").Offset(EX, 0).Value, vbTextCompare) Then
+        If InStr(1, xArtArr(1), Workbooks(appEnv).Worksheets(appBlk).Range("xlasKinLabel").Offset(EX, 0).Value2, vbTextCompare) Then xPos = EX
+        If InStr(1, xArtArr(0), Workbooks(appEnv).Worksheets(appBlk).Range("xlasKinLabel").Offset(EX, 0).Value2, vbTextCompare) Then
     
             If InStr(1, xTest, "=") = False Then
             
-            xTest = Replace(xTest, Workbooks(appEnv).Worksheets(appBlk).Range("xlasKinLabel").Offset(EX, 0).Value, _
-            Workbooks(appEnv).Worksheets(appBlk).Range("xlasKinValueMod").Offset(EX, 0).Value, vbTextCompare)
+            xTest = Replace(xTest, Workbooks(appEnv).Worksheets(appBlk).Range("xlasKinLabel").Offset(EX, 0).Value2, _
+            Workbooks(appEnv).Worksheets(appBlk).Range("xlasKinValueMod").Offset(EX, 0).Value2, vbTextCompare)
             End If
                 
             If InStr(1, xArtArr(1), "@") = False Or InStr(1, xArtArr(0), "%@") Then
             xArt = xArtArr(0): Call modArtM(xArt): xArtArr(0) = xArt
             If UBound(xArtArr) > 1 Then For AX = 2 To UBound(xArtArr): xArtArr(1) = xArtArr(1) & "=" & xArtArr(AX): Next
-                Workbooks(appEnv).Worksheets(appBlk).Range("xlasKinValueMod").Offset(EX, 0).Value = xArtArr(1)
-                Workbooks(appEnv).Worksheets(appBlk).Range("xlasKinValue").Offset(EX, 0).Value = Workbooks(appEnv).Worksheets(appBlk).Range("xlasKinLabel").Offset(EX, 0).Value
+                Workbooks(appEnv).Worksheets(appBlk).Range("xlasKinValueMod").Offset(EX, 0).Value2 = xArtArr(1)
+                Workbooks(appEnv).Worksheets(appBlk).Range("xlasKinValue").Offset(EX, 0).Value2 = Workbooks(appEnv).Worksheets(appBlk).Range("xlasKinLabel").Offset(EX, 0).Value2
                     Else
-                    Workbooks(appEnv).Worksheets(appBlk).Range("xlasKinValueMod").Offset(EX, 0).Value = _
-                    Workbooks(appEnv).Worksheets(appBlk).Range("xlasKinValueMod").Offset(xPos, 0).Value
+                    Workbooks(appEnv).Worksheets(appBlk).Range("xlasKinValueMod").Offset(EX, 0).Value2 = _
+                    Workbooks(appEnv).Worksheets(appBlk).Range("xlasKinValueMod").Offset(xPos, 0).Value2
                         End If
                             End If
                                 Next
@@ -478,26 +478,26 @@ Public Function ifSet$(xArt, E As Byte)
 '//
 '//=============================================================
 '//If-Else...
-Dim mPtr, cPtr, xPtr, xPtrCl, X As Long
+Dim mPtr, cPtr, xPtr, xPtrH, X As Long
 Dim appEnv, appBlk As String
 '//=============================================================
 xArtArr = Split(xArt, "[:]"): xPtrArr = Split(xArt, "[,]")
-If UBound(xPtrArr) = 4 Then xPtr = xPtrArr(1): xPtrCl = xPtrArr(2): mPtr = xPtrArr(3): cPtr = xPtrArr(4)
-If UBound(xPtrArr) = 8 Then xPtr = xPtrArr(5): xPtrCl = xPtrArr(6): mPtr = xPtrArr(7): cPtr = xPtrArr(8)
-If UBound(xPtrArr) = 12 Then xPtr = xPtrArr(9): xPtrCl = xPtrArr(10): mPtr = xPtrArr(11): cPtr = xPtrArr(12)
-If UBound(xPtrArr) = 16 Then xPtr = xPtrArr(13): xPtrCl = xPtrArr(14): mPtr = xPtrArr(15): cPtr = xPtrArr(16)
+If UBound(xPtrArr) = 4 Then xPtr = xPtrArr(1): xPtrH = xPtrArr(2): mPtr = xPtrArr(3): cPtr = xPtrArr(4)
+If UBound(xPtrArr) = 8 Then xPtr = xPtrArr(5): xPtrH = xPtrArr(6): mPtr = xPtrArr(7): cPtr = xPtrArr(8)
+If UBound(xPtrArr) = 12 Then xPtr = xPtrArr(9): xPtrH = xPtrArr(10): mPtr = xPtrArr(11): cPtr = xPtrArr(12)
+If UBound(xPtrArr) = 16 Then xPtr = xPtrArr(13): xPtrH = xPtrArr(14): mPtr = xPtrArr(15): cPtr = xPtrArr(16)
 If cPtr < 1 Then cPtr = 1
 '//=============================================================
 BArr = Split(xArtArr(mPtr), "){"): xArt = BArr(0) '//find boolean placemarker
 If InStr(1, xArt, "@") Then Call kinSet(xArt)
-If UBound(BArr) = 1 Then xArtCl = xArt & "){" & BArr(1): xArtArr(xPtrCl) = xArtCl: xArt = xArtCl '//set variables...
-If UBound(BArr) = 2 Then xArtCl = xArt & "){" & BArr(1) & "){" & BArr(2): xArtArr(xPtrCl) = xArtCl: xArt = xArtCl '//set variables...
+If UBound(BArr) = 1 Then xArtH = xArt & "){" & BArr(1): xArtArr(xPtrH) = xArtH: xArt = xArtH '//set variables...
+If UBound(BArr) = 2 Then xArtH = xArt & "){" & BArr(1) & "){" & BArr(2): xArtArr(xPtrH) = xArtH: xArt = xArtH '//set variables...
 
 Dim B, C, Opr, ECntr, FCntr, S As String
 Dim A As Byte
 S = vbNullString
 
-mPtr = xPtrCl
+mPtr = xPtrH
 Do Until mPtr = UBound(xArtArr)
 If InStr(1, xArtArr(mPtr), "else", vbTextCompare) Then ECntr = mPtr
 If InStr(1, xArtArr(mPtr), "endif", vbTextCompare) Then FCntr = mPtr: GoTo FindBool
@@ -508,7 +508,7 @@ GoTo rtnArt
 '//=============================================================
 '//Boolean check...
 FindBool:
-xArt = xArtArr(xPtrCl)
+xArt = xArtArr(xPtrH)
 
 If InStr(1, xArt, "-and", vbTextCompare) Then S = "1"
 If InStr(1, xArt, "-or", vbTextCompare) Then S = "2"
@@ -642,7 +642,7 @@ If C = 5 Then If (CArr(0)) = (CArr(1)) Then B = "T": GoTo setBool
 
 setBool:
 
-xArtArr(xPtrCl) = xArtCl '//put original article back in it's place
+xArtArr(xPtrH) = xArtH '//put original article back in it's place
 '//=============================================================
 '//True...
 If B = "T" Then
@@ -657,8 +657,8 @@ GoTo rtnArt
 If ECntr <> "" Then mPtr = ECntr: GoTo FindElse
 xArt = "#"
 End If
-If E = 0 Then xPtr = mPtr: xPtrCl = xPtr
-If E = 1 Then xPtrCl = FCntr
+If E = 0 Then xPtr = mPtr: xPtrH = xPtr
+If E = 1 Then xPtrH = FCntr
 GoTo rtnArt
 '//=============================================================
 '//Else...
@@ -668,13 +668,13 @@ xElseArr = Split(xArtArr(mPtr), "else")
 xElseArr(1) = Replace(xElseArr(1), "{", vbNullString)
 xArt = xElseArr(1)
 If E = 0 Then xPtr = mPtr
-If E = 1 Then xPtr = xPtrCl: xPtrCl = mPtr
+If E = 1 Then xPtr = xPtrH: xPtrH = mPtr
 GoTo rtnArt
 
 '//return article
 rtnArt:
 
-xArt = xArt & "[:]" & "[,]" & xPtr & "[,]" & xPtrCl & "[,]" & mPtr & "[,]" & cPtr
+xArt = xArt & "[:]" & "[,]" & xPtr & "[,]" & xPtrH & "[,]" & mPtr & "[,]" & cPtr
 
 End Function
 Public Function doSet$(xArt, E As Byte)
@@ -687,16 +687,16 @@ Public Function doSet$(xArt, E As Byte)
 '//
 '//=============================================================
 '//Do Loop...
-Dim mPtr, cPtr, xPtr, xPtrCl, X As Long
+Dim mPtr, cPtr, xPtr, xPtrH, X As Long
 Dim FocusInstruct(4) As String
 Dim appEnv, appBlk As String
 Dim C As Byte
 '//=============================================================
 xArtArr = Split(xArt, "[:]"): xPtrArr = Split(xArt, "[,]")
-If UBound(xPtrArr) = 4 Then xPtr = xPtrArr(1): xPtrCl = xPtrArr(2): mPtr = xPtrArr(3): cPtr = xPtrArr(4)
-If UBound(xPtrArr) = 8 Then xPtr = xPtrArr(5): xPtrCl = xPtrArr(6): mPtr = xPtrArr(7): cPtr = xPtrArr(8)
-If UBound(xPtrArr) = 12 Then xPtr = xPtrArr(9): xPtrCl = xPtrArr(10): mPtr = xPtrArr(11): cPtr = xPtrArr(12)
-If UBound(xPtrArr) = 16 Then xPtr = xPtrArr(13): xPtrCl = xPtrArr(14): mPtr = xPtrArr(15): cPtr = xPtrArr(16)
+If UBound(xPtrArr) = 4 Then xPtr = xPtrArr(1): xPtrH = xPtrArr(2): mPtr = xPtrArr(3): cPtr = xPtrArr(4)
+If UBound(xPtrArr) = 8 Then xPtr = xPtrArr(5): xPtrH = xPtrArr(6): mPtr = xPtrArr(7): cPtr = xPtrArr(8)
+If UBound(xPtrArr) = 12 Then xPtr = xPtrArr(9): xPtrH = xPtrArr(10): mPtr = xPtrArr(11): cPtr = xPtrArr(12)
+If UBound(xPtrArr) = 16 Then xPtr = xPtrArr(13): xPtrH = xPtrArr(14): mPtr = xPtrArr(15): cPtr = xPtrArr(16)
 '//=============================================================
 If mPtr < 0 Then mPtr = 0
 If cPtr < 1 Then cPtr = 1
@@ -710,13 +710,13 @@ If cPtr <= 0 Then GoTo rtnArt '//End of looping..
     cPtr = Replace(xArtArr(mPtr), "}loop", "", , , vbTextCompare)
     cPtr = CLng(cPtr) * -1
     
-    If CInt(xPtrCl) < CInt(xPtr) Then xPtrCl = xPtr '//set to first article after do statement
+    If CInt(xPtrH) < CInt(xPtr) Then xPtrH = xPtr '//set to first article after do statement
     
     Do Until cPtr <= 0
     
-    Do Until InStr(1, xArtArr(xPtrCl), "}loop", vbTextCompare) Or cPtr <= 0
-    xArtArr(xPtrCl) = Replace(xArtArr(xPtrCl), "do{", "", , , vbTextCompare)
-    xArt = xArtArr(xPtrCl)
+    Do Until InStr(1, xArtArr(xPtrH), "}loop", vbTextCompare) Or cPtr <= 0
+    xArtArr(xPtrH) = Replace(xArtArr(xPtrH), "do{", "", , , vbTextCompare)
+    xArt = xArtArr(xPtrH)
 '//=================================================================
 ParseCheck:
 '//Parse Article/Instruction...
@@ -742,37 +742,37 @@ Next
 '//=============================================================
 '//goto check...
 If C = 1 Then xArt = vbNullString: For X = 0 To UBound(xArtArr): xArt = xArt & xArtArr(X) & "[:]": Next: _
-xArt = xArt & "[,]" & xPtr & "[,]" & xPtrCl & "[,]" & mPtr & "[,]" & cPtr: _
+xArt = xArt & "[,]" & xPtr & "[,]" & xPtrH & "[,]" & mPtr & "[,]" & cPtr: _
 E = 1: Call gotoSet(xArt, E): tArr = Split(xArt, "[:]"): xArt = tArr(0): _
-xPtrArr = Split(tArr(1), "[,]"): xPtr = xPtrArr(1): xPtrCl = xPtrArr(2): mPtr = mPtr: cPtr = xPtrArr(4): _
+xPtrArr = Split(tArr(1), "[,]"): xPtr = xPtrArr(1): xPtrH = xPtrArr(2): mPtr = mPtr: cPtr = xPtrArr(4): _
 C = 0: xArt = vbNullString: GoTo ParseCheck
 '//=============================================================
 '//if check...
 If C = 3 Then xArt = vbNullString: For X = 0 To UBound(xArtArr): xArt = xArt & xArtArr(X) & "[:]": Next: _
-xArt = xArt & "[,]" & xPtr & "[,]" & xPtrCl & "[,]" & xPtrCl & "[,]" & cPtr: _
+xArt = xArt & "[,]" & xPtr & "[,]" & xPtrH & "[,]" & xPtrH & "[,]" & cPtr: _
 E = 1: Call ifSet(xArt, E): tArr = Split(xArt, "[:]"): xArt = tArr(0): _
-xPtrArr = Split(tArr(1), "[,]"): xPtr = xPtrArr(1): xPtrCl = xPtrArr(2): mPtr = mPtr: cPtr = xPtrArr(4): _
+xPtrArr = Split(tArr(1), "[,]"): xPtr = xPtrArr(1): xPtrH = xPtrArr(2): mPtr = mPtr: cPtr = xPtrArr(4): _
  C = 0: GoTo ParseCheck
 '//=============================================================
 '//do check...
 If C = 5 Then xArt = vbNullString: For X = 0 To UBound(xArtArr): xArt = xArt & xArtArr(X) & "[:]": Next: _
-xArt = xArt & "[,]" & xPtr & "[,]" & xPtrCl & "[,]" & mPtr & "[,]" & cPtr: _
+xArt = xArt & "[,]" & xPtr & "[,]" & xPtrH & "[,]" & mPtr & "[,]" & cPtr: _
 E = 1: Call doSet(xArt, E): tArr = Split(xArt, "[:]"): xArt = tArr(0): _
-xPtrArr = Split(tArr(1), "[,]"): xPtr = xPtrArr(1): xPtrCl = xPtrArr(2): mPtr = xPtrArr(3): cPtr = xPtrArr(4): _
+xPtrArr = Split(tArr(1), "[,]"): xPtr = xPtrArr(1): xPtrH = xPtrArr(2): mPtr = xPtrArr(3): cPtr = xPtrArr(4): _
 C = 0: GoTo ParseCheck
 '//=============================================================
 '//libcall check...
 If C = 9 Then xArt = vbNullString: For X = 0 To UBound(xArtArr): xArt = xArt & xArtArr(X) & "[:]": Next: _
 xArt = xArt & "[,]" & xPtr & "[,]" & xPtr & "[,]" & mPtr & "[,]" & cPtr: _
 E = 1: Call libcallSet(xArt, E): tArr = Split(xArt, "[:]"): xArt = tArr(0): _
-xPtrArr = Split(tArr(1), "[,]"): xPtr = xPtrArr(1): xPtrCl = xPtrArr(2): mPtr = xPtrArr(3): cPtr = xPtrArr(4): _
+xPtrArr = Split(tArr(1), "[,]"): xPtr = xPtrArr(1): xPtrH = xPtrArr(2): mPtr = xPtrArr(3): cPtr = xPtrArr(4): _
 C = 0: GoTo ParseCheck
 '//=============================================================
 '//let check...
 If C = 11 Then xArtArr(xPtr) = xArt: xArt = vbNullString: For X = 0 To UBound(xArtArr): xArt = xArt & xArtArr(X) & "[:]": Next: _
-xArt = xArt & "[,]" & xPtr & "[,]" & xPtrCl & "[,]" & mPtr & "[,]" & cPtr: _
+xArt = xArt & "[,]" & xPtr & "[,]" & xPtrH & "[,]" & mPtr & "[,]" & cPtr: _
 E = 1: Call letSet(xArt, E): tArr = Split(xArt, "[:]"): xArt = tArr(0): _
-xPtrArr = Split(tArr(1), "[,]"): xPtr = xPtrArr(1): xPtrCl = xPtrArr(2): mPtr = xPtrArr(3): cPtr = xPtrArr(4): _
+xPtrArr = Split(tArr(1), "[,]"): xPtr = xPtrArr(1): xPtrH = xPtrArr(2): mPtr = xPtrArr(3): cPtr = xPtrArr(4): _
 C = 0: xArt = vbNullString: GoTo ParseCheck
 '//=============================================================
 '//end check...
@@ -783,11 +783,11 @@ If C = 99 Then xArtArr(xPtr) = xArt: Call endSet(xArt): GoTo rtnArt
     Call runScript(xArt) '//run article...
     If xArt = "(*Err)" Then GoTo rtnArt
     
-    xPtrCl = xPtrCl + 1
+    xPtrH = xPtrH + 1
     
         Loop
             
-            xPtrCl = xPtr
+            xPtrH = xPtr
             cPtr = cPtr - 1
             
                 Loop
@@ -805,7 +805,7 @@ If C = 99 Then xArtArr(xPtr) = xArt: Call endSet(xArt): GoTo rtnArt
 '//return article
 rtnArt:
 
-If CInt(xPtrCl) > CInt(mPtr) Then mPtr = xPtrCl: If cPtr = 0 Then mPtr = mPtr + 1
+If CInt(xPtrH) > CInt(mPtr) Then mPtr = xPtrH: If cPtr = 0 Then mPtr = mPtr + 1
 
 xArt = "#"
 xArt = xArt & "[:]" & "[,]" & mPtr - 1 & "[,]" & mPtr - 1 & "[,]" & mPtr - 1 & "[,]" & cPtr
@@ -819,28 +819,28 @@ Public Function gotoSet$(xArt, E As Byte)
 '/\____________________________________________________________________________________
 '//
 '//
-Dim mPtr, cPtr, xPtr, xPtrCl, X As Long
+Dim mPtr, cPtr, xPtr, xPtrH, X As Long
 Dim appEnv, appBlk As String
 '//=============================================================
 xArtArr = Split(xArt, "[:]"): xPtrArr = Split(xArt, "[,]")
-If UBound(xPtrArr) = 4 Then xPtr = xPtrArr(1): xPtrCl = xPtrArr(2): mPtr = xPtrArr(3): cPtr = xPtrArr(4)
-If UBound(xPtrArr) = 8 Then xPtr = xPtrArr(5): xPtrCl = xPtrArr(6): mPtr = xPtrArr(7): cPtr = xPtrArr(8)
-If UBound(xPtrArr) = 12 Then xPtr = xPtrArr(9): xPtrCl = xPtrArr(10): mPtr = xPtrArr(11): cPtr = xPtrArr(12)
-If UBound(xPtrArr) = 16 Then xPtr = xPtrArr(13): xPtrCl = xPtrArr(14): mPtr = xPtrArr(15): cPtr = xPtrArr(16)
+If UBound(xPtrArr) = 4 Then xPtr = xPtrArr(1): xPtrH = xPtrArr(2): mPtr = xPtrArr(3): cPtr = xPtrArr(4)
+If UBound(xPtrArr) = 8 Then xPtr = xPtrArr(5): xPtrH = xPtrArr(6): mPtr = xPtrArr(7): cPtr = xPtrArr(8)
+If UBound(xPtrArr) = 12 Then xPtr = xPtrArr(9): xPtrH = xPtrArr(10): mPtr = xPtrArr(11): cPtr = xPtrArr(12)
+If UBound(xPtrArr) = 16 Then xPtr = xPtrArr(13): xPtrH = xPtrArr(14): mPtr = xPtrArr(15): cPtr = xPtrArr(16)
 '//=============================================================
 
-Call findEnvironment(appEnv, appBlk)
+Call fndEnvironment(appEnv, appBlk)
 
-xGArr = Split(xArtArr(xPtrCl), "goto ", , vbTextCompare)
+xGArr = Split(xArtArr(xPtrH), "goto ", , vbTextCompare)
 xArt = xGArr(1): Call modArtP(xArt): Call modArtQ(xArt): Call modArtS(xArt)
 xArt = Trim(xArt)
 
 X = 0
 Do While X < UBound(xArtArr)
 If Workbooks(appEnv).Worksheets(appBlk).Range("xlasArticle").Offset(X, 0) = ":" & xArt Then
-Workbooks(appEnv).Worksheets(appBlk).Range("xlasGoto").Value = _
-Workbooks(appEnv).Worksheets(appBlk).Range("xlasState").Offset(X, 0).Value '//find state...
-mPtr = Workbooks(appEnv).Worksheets(appBlk).Range("xlasState").Offset(X, 0).Value
+Workbooks(appEnv).Worksheets(appBlk).Range("xlasGoto").Value22 = _
+Workbooks(appEnv).Worksheets(appBlk).Range("xlasState").Offset(X, 0).Value2 '//find state...
+mPtr = Workbooks(appEnv).Worksheets(appBlk).Range("xlasState").Offset(X, 0).Value2
 E = 2
 xArt = "#"
 GoTo rtnArt
@@ -864,20 +864,20 @@ Public Function libcallSet$(xArt, E As Byte)
 '//
 '//=============================================================
 '//Library Call...
-Dim mPtr, cPtr, xPtr, xPtrCl, X As Long
+Dim mPtr, cPtr, xPtr, xPtrH, X As Long
 Dim FocusInstruct(4), xLArr(100) As String
 Dim appEnv, appBlk, xLib As String
 Dim C As Byte
 '//=============================================================
-xArtArr = Split(xArt, "[:]"): xArtArrCl = Split(xArt, "[:]")
+xArtArr = Split(xArt, "[:]"): xArtArrH = Split(xArt, "[:]")
 xPtrArr = Split(xArt, "[,]")
-If UBound(xPtrArr) = 4 Then xPtr = xPtrArr(1): xPtrCl = xPtrArr(2): mPtr = xPtrArr(3): cPtr = xPtrArr(4)
-If UBound(xPtrArr) = 8 Then xPtr = xPtrArr(5): xPtrCl = xPtrArr(6): mPtr = xPtrArr(7): cPtr = xPtrArr(8)
-If UBound(xPtrArr) = 12 Then xPtr = xPtrArr(9): xPtrCl = xPtrArr(10): mPtr = xPtrArr(11): cPtr = xPtrArr(12)
-If UBound(xPtrArr) = 16 Then xPtr = xPtrArr(13): xPtrCl = xPtrArr(14): mPtr = xPtrArr(15): cPtr = xPtrArr(16)
+If UBound(xPtrArr) = 4 Then xPtr = xPtrArr(1): xPtrH = xPtrArr(2): mPtr = xPtrArr(3): cPtr = xPtrArr(4)
+If UBound(xPtrArr) = 8 Then xPtr = xPtrArr(5): xPtrH = xPtrArr(6): mPtr = xPtrArr(7): cPtr = xPtrArr(8)
+If UBound(xPtrArr) = 12 Then xPtr = xPtrArr(9): xPtrH = xPtrArr(10): mPtr = xPtrArr(11): cPtr = xPtrArr(12)
+If UBound(xPtrArr) = 16 Then xPtr = xPtrArr(13): xPtrH = xPtrArr(14): mPtr = xPtrArr(15): cPtr = xPtrArr(16)
 '//=============================================================
 If mPtr < 0 Then mPtr = 0
-If CInt(mPtr) > CInt(xPtrCl) Then mPtr = xPtrCl
+If CInt(mPtr) > CInt(xPtrH) Then mPtr = xPtrH
 
 Do While mPtr < UBound(xArtArr)
  
@@ -886,8 +886,8 @@ Do While mPtr < UBound(xArtArr)
     lRow = Cells(Rows.Count, "MAL").End(xlUp).Row
     
     '//extract library...
-    xArtArr(xPtrCl) = Replace(xArtArr(xPtrCl), "libcall(", "", , , vbTextCompare)
-    xTempArr = Split(xArtArr(xPtrCl), "libcall"): xTempArr = Split(xTempArr(0), "){")
+    xArtArr(xPtrH) = Replace(xArtArr(xPtrH), "libcall(", "", , , vbTextCompare)
+    xTempArr = Split(xArtArr(xPtrH), "libcall"): xTempArr = Split(xTempArr(0), "){")
     
     For X = 0 To UBound(xTempArr)
     xTempArr(X) = Replace(xTempArr(X), "(", "*/LPAREN")
@@ -897,20 +897,20 @@ Do While mPtr < UBound(xArtArr)
     Next
    
 LibFound:
-    xArtArr(xPtrCl) = Replace(xArtArr(xPtrCl), xLib & "){", vbNullString)
+    xArtArr(xPtrH) = Replace(xArtArr(xPtrH), xLib & "){", vbNullString)
     xArt = xLib: Call modArtQ(xArt): Call modArtS(xArt)
     
     '//keep track of previous librarie(s)...
     For X = 1 To lRow
-    xLArr(X) = Range("xlasLib").Offset(lRow, 0).Value
+    xLArr(X) = Range("xlasLib").Offset(lRow, 0).Value2
     Next
     
     '//set called library to top of stack
-    Range("xlasLib").Offset(1, 0).Value = xArt
+    Range("xlasLib").Offset(1, 0).Value2 = xArt
 '//=================================================================
-    Do Until InStr(1, xArtArr(xPtrCl), "}endcall", vbTextCompare)
+    Do Until InStr(1, xArtArr(xPtrH), "}endcall", vbTextCompare)
    
-    xArt = xArtArr(xPtrCl)
+    xArt = xArtArr(xPtrH)
 '//=================================================================
 ParseCheck:
 
@@ -939,37 +939,37 @@ Next
 '//=============================================================
 '//goto check...
 If C = 1 Then xArt = vbNullString: For X = 0 To UBound(xArtArr): xArt = xArt & xArtArr(X) & "[:]": Next: _
-xArt = xArt & "[,]" & xPtr & "[,]" & xPtrCl & "[,]" & mPtr & "[,]" & cPtr: _
+xArt = xArt & "[,]" & xPtr & "[,]" & xPtrH & "[,]" & mPtr & "[,]" & cPtr: _
 E = 1: Call gotoSet(xArt, E): tArr = Split(xArt, "[:]"): xArt = tArr(0): _
-xPtrArr = Split(tArr(1), "[,]"): xPtr = xPtrArr(1): xPtrCl = xPtrArr(2): mPtr = mPtr: cPtr = xPtrArr(4): _
+xPtrArr = Split(tArr(1), "[,]"): xPtr = xPtrArr(1): xPtrH = xPtrArr(2): mPtr = mPtr: cPtr = xPtrArr(4): _
 C = 0: xArt = vbNullString: GoTo ParseCheck
 '//=============================================================
 '//if check...
 If C = 3 Then xArt = vbNullString: For X = 0 To UBound(xArtArr): xArt = xArt & xArtArr(X) & "[:]": Next: _
-xArt = xArt & "[,]" & xPtr & "[,]" & xPtrCl & "[,]" & xPtrCl & "[,]" & cPtr: _
+xArt = xArt & "[,]" & xPtr & "[,]" & xPtrH & "[,]" & xPtrH & "[,]" & cPtr: _
 E = 1: Call ifSet(xArt, E): tArr = Split(xArt, "[:]"): xArt = tArr(0): _
-xPtrArr = Split(tArr(1), "[,]"): xPtr = xPtrArr(1): xPtrCl = xPtrArr(2): mPtr = mPtr: cPtr = xPtrArr(4): _
+xPtrArr = Split(tArr(1), "[,]"): xPtr = xPtrArr(1): xPtrH = xPtrArr(2): mPtr = mPtr: cPtr = xPtrArr(4): _
  C = 0: GoTo ParseCheck
 '//=============================================================
 '//do check...
 If C = 5 Then xArtArr(xPtr) = xArt: xArt = vbNullString: For X = 0 To UBound(xArtArr): xArt = xArt & xArtArr(X) & "[:]": Next: _
-xArt = xArt & "[,]" & xPtr & "[,]" & xPtrCl & "[,]" & xPtrCl & "[,]" & xPtr: _
+xArt = xArt & "[,]" & xPtr & "[,]" & xPtrH & "[,]" & xPtrH & "[,]" & xPtr: _
 E = 1: Call doSet(xArt, E): tArr = Split(xArt, "[:]"): xArt = tArr(0): _
-tArr = Split(tArr(1), "[,]"): xPtr = xPtrArr(1): xPtrCl = tArr(2): mPtr = tArr(3): cPtr = xPtrArr(4): _
-C = 0: xArtArr(xPtr) = xArtArrCl(xPtr): GoTo ParseCheck
+tArr = Split(tArr(1), "[,]"): xPtr = xPtrArr(1): xPtrH = tArr(2): mPtr = tArr(3): cPtr = xPtrArr(4): _
+C = 0: xArtArr(xPtr) = xArtArrH(xPtr): GoTo ParseCheck
 '//=============================================================
 '//libcall check...
 If C = 9 Then xArt = vbNullString: For X = 0 To UBound(xArtArr): xArt = xArt & xArtArr(X) & "[:]": Next: _
-xArt = xArt & "[,]" & xPtr & "[,]" & xPtr & "[,]" & xPtrCl & "[,]" & cPtr: _
+xArt = xArt & "[,]" & xPtr & "[,]" & xPtr & "[,]" & xPtrH & "[,]" & cPtr: _
 E = 1: Call libcallSet(xArt, E): tArr = Split(xArt, "[:]"): xArt = tArr(0): _
-xPtrArr = Split(tArr(1), "[,]"): xPtr = xPtrArr(1): xPtrCl = xPtrArr(2): mPtr = xPtrArr(3): cPtr = xPtrArr(4): _
+xPtrArr = Split(tArr(1), "[,]"): xPtr = xPtrArr(1): xPtrH = xPtrArr(2): mPtr = xPtrArr(3): cPtr = xPtrArr(4): _
 C = 0: GoTo ParseCheck
 '//=============================================================
 '//let check...
 If C = 11 Then xArtArr(xPtr) = xArt: xArt = vbNullString: For X = 0 To UBound(xArtArr): xArt = xArt & xArtArr(X) & "[:]": Next: _
-xArt = xArt & "[,]" & xPtr & "[,]" & xPtrCl & "[,]" & mPtr & "[,]" & cPtr: _
+xArt = xArt & "[,]" & xPtr & "[,]" & xPtrH & "[,]" & mPtr & "[,]" & cPtr: _
 E = 1: Call letSet(xArt, E): tArr = Split(xArt, "[:]"): xArt = tArr(0): _
-xPtrArr = Split(tArr(1), "[,]"): xPtr = xPtrArr(1): xPtrCl = xPtrArr(2): mPtr = xPtrCl: cPtr = xPtrArr(4): _
+xPtrArr = Split(tArr(1), "[,]"): xPtr = xPtrArr(1): xPtrH = xPtrArr(2): mPtr = xPtrH: cPtr = xPtrArr(4): _
 C = 0: xArt = vbNullString: GoTo ParseCheck
 '//=============================================================
 '//end check...
@@ -979,7 +979,7 @@ If C = 99 Then xArtArr(xPtr) = xArt: Call endSet(xArt): GoTo rtnArt
     Call runScript(xArt) '//run article...
     If xArt = "(*Err)" Then GoTo rtnArt
     
-    xPtrCl = xPtrCl + 1
+    xPtrH = xPtrH + 1
     
     
         Loop
@@ -1005,7 +1005,7 @@ If CInt(xPtr) > CInt(mPtr) Then mPtr = xPtr - 1
 
 xArt = "#": X = 1
 Do Until xLArr(X) = vbNullString
-Range("xlasLib").Offset(lRow, 0).Value = xLArr(X) '//return previous librarie(s) to stack
+Range("xlasLib").Offset(lRow, 0).Value2 = xLArr(X) '//return previous librarie(s) to stack
 Loop
 
 xArt = xArt & "[:]" & "[,]" & xPtr & "[,]" & mPtr & "[,]" & mPtr & "[,]" & cPtr
@@ -1019,19 +1019,19 @@ Public Function letSet$(xArt, E As Byte)
 '/\____________________________________________________________________________________
 '//
 '//
-Dim mPtr, cPtr, xPtr, xPtrCl, X As Long
+Dim mPtr, cPtr, xPtr, xPtrH, X As Long
 Dim appEnv, appBlk As String
 '//=============================================================
 xArtArr = Split(xArt, "[:]"): xPtrArr = Split(xArt, "[,]")
-If UBound(xPtrArr) = 4 Then xPtr = xPtrArr(1): xPtrCl = xPtrArr(2): mPtr = xPtrArr(3): cPtr = xPtrArr(4)
-If UBound(xPtrArr) = 8 Then xPtr = xPtrArr(5): xPtrCl = xPtrArr(6): mPtr = xPtrArr(7): cPtr = xPtrArr(8)
-If UBound(xPtrArr) = 12 Then xPtr = xPtrArr(9): xPtrCl = xPtrArr(10): mPtr = xPtrArr(11): cPtr = xPtrArr(12)
-If UBound(xPtrArr) = 16 Then xPtr = xPtrArr(13): xPtrCl = xPtrArr(14): mPtr = xPtrArr(15): cPtr = xPtrArr(16)
+If UBound(xPtrArr) = 4 Then xPtr = xPtrArr(1): xPtrH = xPtrArr(2): mPtr = xPtrArr(3): cPtr = xPtrArr(4)
+If UBound(xPtrArr) = 8 Then xPtr = xPtrArr(5): xPtrH = xPtrArr(6): mPtr = xPtrArr(7): cPtr = xPtrArr(8)
+If UBound(xPtrArr) = 12 Then xPtr = xPtrArr(9): xPtrH = xPtrArr(10): mPtr = xPtrArr(11): cPtr = xPtrArr(12)
+If UBound(xPtrArr) = 16 Then xPtr = xPtrArr(13): xPtrH = xPtrArr(14): mPtr = xPtrArr(15): cPtr = xPtrArr(16)
 '//=============================================================
 
-Call findEnvironment(appEnv, appBlk)
+Call fndEnvironment(appEnv, appBlk)
 
-xLetArr = Split(xArtArr(xPtrCl), "let ", , vbTextCompare)
+xLetArr = Split(xArtArr(xPtrH), "let ", , vbTextCompare)
 
 xSetArr = Split(xLetArr(1), "=")
 xArt = xSetArr(0): Call modArtP(xArt): Call modArtQ(xArt): xArt = Trim(xArt): xSetArr(0) = xArt
@@ -1046,7 +1046,7 @@ rtnArt:
 
 xArt = "#"
 
-xArt = xArt & "[:]" & "[,]" & xPtr & "[,]" & xPtrCl & "[,]" & mPtr & "[,]" & cPtr
+xArt = xArt & "[:]" & "[,]" & xPtr & "[,]" & xPtrH & "[,]" & mPtr & "[,]" & cPtr
 
 End Function
 Public Function endSet$(xArt)
@@ -1069,61 +1069,61 @@ Public Function escSpecial$(xArt)
 '/\__________________________________________________________________________________
 
 
-Dim xArtCl$
+Dim xArtH$
 
-xArtCl = xArt
+xArtH = xArt
 
-If InStr(1, xArtCl, "[$]") Then
+If InStr(1, xArtH, "[$]") Then
 '//escape dollar symbol
-xArtCl = Replace(xArtCl, "[$]", "*/DOLLAR")
+xArtH = Replace(xArtH, "[$]", "*/DOLLAR")
 End If
 
-If InStr(1, xArtCl, "[#]") Then
+If InStr(1, xArtH, "[#]") Then
 '//escape hash symbol
-xArtCl = Replace(xArtCl, "[#]", "*/HASH")
+xArtH = Replace(xArtH, "[#]", "*/HASH")
 End If
 
-If InStr(1, xArtCl, "[;]") Then
+If InStr(1, xArtH, "[;]") Then
 '//escape semicolon symbol
-xArtCl = Replace(xArtCl, "[;]", "*/SEMICOLON")
+xArtH = Replace(xArtH, "[;]", "*/SEMICOLON")
 End If
 
-If InStr(1, xArtCl, "[tab]", vbTextCompare) Then
+If InStr(1, xArtH, "[tab]", vbTextCompare) Then
 '//escape tab symbol
-xArtCl = Replace(xArtCl, "[tab]", "*/TAB")
+xArtH = Replace(xArtH, "[tab]", "*/TAB")
 End If
 
-If InStr(1, xArtCl, "[feed]", vbTextCompare) Then
+If InStr(1, xArtH, "[feed]", vbTextCompare) Then
 '//escape linefeed symbol
-xArtCl = Replace(xArtCl, "[feed]", "*/FEED")
+xArtH = Replace(xArtH, "[feed]", "*/FEED")
 End If
 
-If InStr(1, xArtCl, "[nl]", vbTextCompare) Then
+If InStr(1, xArtH, "[nl]", vbTextCompare) Then
 '//escape newline symbol
-xArtCl = Replace(xArtCl, "[nl]", "*/NEWLINE")
+xArtH = Replace(xArtH, "[nl]", "*/NEWLINE")
 End If
 
-If InStr(1, xArtCl, "[null]", vbTextCompare) Then
+If InStr(1, xArtH, "[null]", vbTextCompare) Then
 '//escape null symbol
-xArtCl = Replace(xArtCl, "[null]", "*/NULL")
+xArtH = Replace(xArtH, "[null]", "*/NULL")
 End If
 
-If InStr(1, xArtCl, "[space]", vbTextCompare) Then
+If InStr(1, xArtH, "[space]", vbTextCompare) Then
 '//escape space symbol
-xArtCl = Replace(xArtCl, "[space]", "*/SPACE")
+xArtH = Replace(xArtH, "[space]", "*/SPACE")
 End If
 
-If InStr(1, xArtCl, "[(]", vbTextCompare) Then
+If InStr(1, xArtH, "[(]", vbTextCompare) Then
 '//escape left parenthese symbol
-xArtCl = Replace(xArtCl, "[(]", "*/LPAREN")
+xArtH = Replace(xArtH, "[(]", "*/LPAREN")
 End If
 
-If InStr(1, xArtCl, "[)]", vbTextCompare) Then
+If InStr(1, xArtH, "[)]", vbTextCompare) Then
 '//escape right parentheses symbol
-xArtCl = Replace(xArtCl, "[)]", "*/RPAREN")
+xArtH = Replace(xArtH, "[)]", "*/RPAREN")
 End If
 
-xArt = xArtCl
+xArt = xArtH
 
 End Function
 Public Function rtnSpecial$(xArt)
@@ -1133,64 +1133,64 @@ Public Function rtnSpecial$(xArt)
 '//     A function for returning ([#]) special characters or strings before runtime
 '/\__________________________________________________________________________________
 
-Dim xArtCl$
+Dim xArtH$
 
-xArtCl = xArt
+xArtH = xArt
 
-If InStr(1, xArtCl, "*/DOLLAR") Then
+If InStr(1, xArtH, "*/DOLLAR") Then
 '//return dollar symbol
-xArtCl = Replace(xArtCl, "*/DOLLAR", "$")
+xArtH = Replace(xArtH, "*/DOLLAR", "$")
 End If
 
-If InStr(1, xArtCl, "*/HASH") Then
+If InStr(1, xArtH, "*/HASH") Then
 '//return hash symbol
-xArtCl = Replace(xArtCl, "*/HASH", "#")
+xArtH = Replace(xArtH, "*/HASH", "#")
 End If
 
-If InStr(1, xArtCl, "*/SEMICOLON") Then
+If InStr(1, xArtH, "*/SEMICOLON") Then
 '//return semicolon symbol
-xArtCl = Replace(xArtCl, "*/SEMICOLON", ";")
+xArtH = Replace(xArtH, "*/SEMICOLON", ";")
 End If
 
-If InStr(1, xArtCl, "*/TAB") Then
+If InStr(1, xArtH, "*/TAB") Then
 '//return tab
-xArtCl = Replace(xArtCl, "*/TAB", vbTab)
+xArtH = Replace(xArtH, "*/TAB", vbTab)
 End If
 
-If InStr(1, xArtCl, "*/FEED") Then
+If InStr(1, xArtH, "*/FEED") Then
 '//return line feed
-xArtCl = Replace(xArtCl, "*/FEED", vbLf)
+xArtH = Replace(xArtH, "*/FEED", vbLf)
 End If
 
-If InStr(1, xArtCl, "*/NEWLINE") Then
+If InStr(1, xArtH, "*/NEWLINE") Then
 '//return newline
-xArtCl = Replace(xArtCl, "*/NEWLINE", vbNewLine)
+xArtH = Replace(xArtH, "*/NEWLINE", vbNewLine)
 End If
 
-If InStr(1, xArtCl, "*/NULL") Then
+If InStr(1, xArtH, "*/NULL") Then
 '//return null
-xArtCl = Replace(xArtCl, "*/NULL", vbNullString)
+xArtH = Replace(xArtH, "*/NULL", vbNullString)
 End If
 
-If InStr(1, xArtCl, "*/SPACE") Then
+If InStr(1, xArtH, "*/SPACE") Then
 '//return space
-xArtCl = Replace(xArtCl, "*/SPACE", " ")
+xArtH = Replace(xArtH, "*/SPACE", " ")
 End If
 
-If InStr(1, xArtCl, "*/LPAREN") Then
+If InStr(1, xArtH, "*/LPAREN") Then
 '//return left parentheses
-xArtCl = Replace(xArtCl, "*/LPAREN", "(")
+xArtH = Replace(xArtH, "*/LPAREN", "(")
 End If
 
-If InStr(1, xArtCl, "*/RPAREN") Then
+If InStr(1, xArtH, "*/RPAREN") Then
 '//return right parentheses
-xArtCl = Replace(xArtCl, "*/RPAREN", ")")
+xArtH = Replace(xArtH, "*/RPAREN", ")")
 End If
 
-xArt = xArtCl
+xArt = xArtH
 
 End Function
-Public Function findChar$(xArt)
+Public Function fndChar$(xArt)
 
 '/\__________________________________________________________________________
 '//
@@ -1219,7 +1219,7 @@ Loop
 xChar = xArt
 
 End Function
-Public Function findEnvironment$(appEnv, appBlk)
+Public Function fndEnvironment$(appEnv, appBlk)
 
 '/\__________________________________________________________________________
 '//
@@ -1231,10 +1231,10 @@ Dim B, N As Object
         On Error GoTo useThisEnv
         
         '//Set application runtime environment (Workbook)...
-        If Range("xlasEnvironment").Value <> vbNullString Then appEnv = Range("xlasEnvironment").Value
+        If Range("xlasEnvironment").Value2 <> vbNullString Then appEnv = Range("xlasEnvironment").Value2
         
         '//Set application runtime block (Worksheet)...
-        If Range("xlasBlock").Value <> vbNullString Then appBlk = Range("xlasBlock").Value
+        If Range("xlasBlock").Value2 <> vbNullString Then appBlk = Range("xlasBlock").Value2
         
         If appEnv <> vbNullString And appBlk <> vbNullString Then Exit Function '//exit if both set, otherwise find
         
@@ -1243,22 +1243,22 @@ Dim B, N As Object
 '//Environment not found or specified (Default)
 useThisEnv:
 Err.Clear
-If Range("xlasEnvironment").Value <> vbNullString Then appEnv = Range("xlasEnvironment").Value Else appEnv = ThisWorkbook.Name
+If Range("xlasEnvironment").Value2 <> vbNullString Then appEnv = Range("xlasEnvironment").Value2 Else appEnv = ThisWorkbook.name
 
 '//Find application runtime block...
 findBlock:
 For Each B In Workbooks(appEnv).Sheets
     For Each N In Workbooks(appEnv).Names
-        If N.Name = "xlasEnvironment" Then appBlk = B.Name: Range("xlasBlock").Value = appBlk: _
-        Range("xlasEnvironment").Value = appEnv: Exit Function
+        If N.name = "xlasEnvironment" Then appBlk = B.name: Range("xlasBlock").Value2 = appBlk: _
+        Range("xlasEnvironment").Value2 = appEnv: Exit Function
             Next
                 Next
 
 '//Block not found or specified (Default)
-appBlk = appBlk: Range("xlasBlock").Value = appBlk: Range("xlasEnvironment").Value = appEnv: Exit Function
+appBlk = appBlk: Range("xlasBlock").Value2 = appBlk: Range("xlasEnvironment").Value2 = appEnv: Exit Function
 
 End Function
-Public Function findEnvironmentVars$(xArt)
+Public Function fndEnvironmentVars$(xArt)
 
 '/\__________________________________________________________________________
 '//
@@ -1305,7 +1305,7 @@ If InStr(1, xArt, "@envuser", vbTextCompare) Then xArt = Replace(xArt, "@envuser
 If InStr(1, xArt, "@envwindir", vbTextCompare) Then xArt = Replace(xArt, "@envwindir", Environ("windir"), , , vbTextCompare)
 
 End Function
-Public Function findJunk%(errLvl)
+Public Function fndJunk%(errLvl)
 
 '/\________________________________________________________________________________
 '//
@@ -1352,7 +1352,7 @@ If Left(xArt, Len(xArt) - Len(xArt) + 1) = "}" Then errLvl = 1: Exit Function
 If Left(xArt, Len(xArt) - Len(xArt) + 2) = "if" Then errLvl = 1: Exit Function
 
 End Function
-Private Function findLib$(xLib)
+Private Function fndLibs$(xLib)
 
 '/\______________________________________________________________________________________
 '//
@@ -1360,12 +1360,12 @@ Private Function findLib$(xLib)
 '/\______________________________________________________________________________________
 
 Dim appEnv, appBlk As String
-Call findEnvironment(appEnv, appBlk)
+Call fndEnvironment(appEnv, appBlk)
 
-xLib = "xlAppScript_" & Workbooks(appEnv).Worksheets(appBlk).Range("xlasLib").Offset(xLib, 0).Value & ".runLib"
+xLib = "xlAppScript_" & Workbooks(appEnv).Worksheets(appBlk).Range("xlasLib").Offset(xLib, 0).Value2 & ".runLib"
 
 End Function
-Public Function findWindow(xWin) As Object
+Public Function fndWindow(xWin) As Object
 
 '/\__________________________________________________________________________
 '//
@@ -1373,27 +1373,27 @@ Public Function findWindow(xWin) As Object
 '/\__________________________________________________________________________
 
 Dim appEnv, appBlk As String
-Call findEnvironment(appEnv, appBlk)
+Call fndEnvironment(appEnv, appBlk)
 
 '//Mainly for keeping track of when we use the Ctrl Box and need to reset the Window number back...
-Workbooks(appEnv).Worksheets(appBlk).Range("xlasWinFormLast").Value = Workbooks(appEnv).Worksheets(appBlk).Range("xlasWinForm").Value
+Workbooks(appEnv).Worksheets(appBlk).Range("xlasWinFormLast").Value2 = Workbooks(appEnv).Worksheets(appBlk).Range("xlasWinForm").Value2
 
 '//Check for current running window
 '//
 '//eTweetXL: Main Windows
-If Workbooks(appEnv).Worksheets(appBlk).Range("xlasWinForm").Value = 1 Then Set xWin = ETWEETXLHOME: Exit Function
-If Workbooks(appEnv).Worksheets(appBlk).Range("xlasWinForm").Value = 2 Then Set xWin = ETWEETXLSETUP: Exit Function
-If Workbooks(appEnv).Worksheets(appBlk).Range("xlasWinForm").Value = 3 Then Set xWin = ETWEETXLPOST: Exit Function
-If Workbooks(appEnv).Worksheets(appBlk).Range("xlasWinForm").Value = 4 Then Set xWin = ETWEETXLQUEUE: Exit Function
-If Workbooks(appEnv).Worksheets(appBlk).Range("xlasWinForm").Value = 5 Then Set xWin = ETWEETXLAPISETUP: Exit Function
+If Workbooks(appEnv).Worksheets(appBlk).Range("xlasWinForm").Value2 = 1 Then Set xWin = ETWEETXLHOME: Exit Function
+If Workbooks(appEnv).Worksheets(appBlk).Range("xlasWinForm").Value2 = 2 Then Set xWin = ETWEETXLSETUP: Exit Function
+If Workbooks(appEnv).Worksheets(appBlk).Range("xlasWinForm").Value2 = 3 Then Set xWin = ETWEETXLPOST: Exit Function
+If Workbooks(appEnv).Worksheets(appBlk).Range("xlasWinForm").Value2 = 4 Then Set xWin = ETWEETXLQUEUE: Exit Function
+If Workbooks(appEnv).Worksheets(appBlk).Range("xlasWinForm").Value2 = 5 Then Set xWin = ETWEETXLAPISETUP: Exit Function
 '//eTweetXL: Post Boxes
-If Workbooks(appEnv).Worksheets(appBlk).Range("xlasWinForm").Value = 31 Then Set xWin = ETWEETXLPOST.PostBox: Exit Function
-If Workbooks(appEnv).Worksheets(appBlk).Range("xlasWinForm").Value = 41 Then Set xWin = ETWEETXLQUEUE.PostBox: Exit Function
+If Workbooks(appEnv).Worksheets(appBlk).Range("xlasWinForm").Value2 = 31 Then Set xWin = ETWEETXLPOST.PostBox: Exit Function
+If Workbooks(appEnv).Worksheets(appBlk).Range("xlasWinForm").Value2 = 41 Then Set xWin = ETWEETXLQUEUE.PostBox: Exit Function
 '//Control Box: Main Windows
-If Workbooks(appEnv).Worksheets(appBlk).Range("xlasWinForm").Value = 10 Then Set xWin = CTRLBOX: Exit Function
+If Workbooks(appEnv).Worksheets(appBlk).Range("xlasWinForm").Value2 = 10 Then Set xWin = CTRLBOX: Exit Function
 
 End Function
-Public Function findRunTool(xTool) As Object
+Public Function fndRunTool(xTool) As Object
 
 '/\__________________________________________________________________________
 '//
@@ -1401,18 +1401,18 @@ Public Function findRunTool(xTool) As Object
 '/\__________________________________________________________________________
 
 Dim appEnv, appBlk As String
-Call findEnvironment(appEnv, appBlk)
+Call fndEnvironment(appEnv, appBlk)
 
 '//Check for current running window
 '//
 '//eTweetXL Run Tools
-If Workbooks(appEnv).Worksheets(appBlk).Range("xlasWinForm").Value = 1 Then Set xTool = ETWEETXLHOME.xlFlowStrip
-If Workbooks(appEnv).Worksheets(appBlk).Range("xlasWinForm").Value = 2 Then Set xTool = ETWEETXLSETUP.xlFlowStrip
-If Workbooks(appEnv).Worksheets(appBlk).Range("xlasWinForm").Value = 3 Then Set xTool = ETWEETXLPOST.xlFlowStrip
-If Workbooks(appEnv).Worksheets(appBlk).Range("xlasWinForm").Value = 4 Then Set xTool = ETWEETXLQUEUE.xlFlowStrip
+If Workbooks(appEnv).Worksheets(appBlk).Range("xlasWinForm").Value2 = 1 Then Set xTool = ETWEETXLHOME.xlFlowStrip
+If Workbooks(appEnv).Worksheets(appBlk).Range("xlasWinForm").Value2 = 2 Then Set xTool = ETWEETXLSETUP.xlFlowStrip
+If Workbooks(appEnv).Worksheets(appBlk).Range("xlasWinForm").Value2 = 3 Then Set xTool = ETWEETXLPOST.xlFlowStrip
+If Workbooks(appEnv).Worksheets(appBlk).Range("xlasWinForm").Value2 = 4 Then Set xTool = ETWEETXLQUEUE.xlFlowStrip
 
 '//CTRL Box Run Tools
-If Workbooks(appEnv).Worksheets(appBlk).Range("xlasWinForm").Value = 10 Then Set xTool = CTRLBOX.CtrlBoxWindow
+If Workbooks(appEnv).Worksheets(appBlk).Range("xlasWinForm").Value2 = 10 Then Set xTool = CTRLBOX.CtrlBoxWindow
 
 End Function
 Private Function runScript$(xArt)
@@ -1426,21 +1426,21 @@ Private Function runScript$(xArt)
     
     '//Check first library location...
     On Error GoTo OutsideWb
-    xLib = 1: errLvl = xArt: Call findJunk(errLvl): If errLvl = 1 Then GoTo EndMacro Else Call findLib(xLib): Call rtnSpecial(xArt)
-    CHECKLIB = Application.Run(xLib, (xArt)): If Range("xlasErrRef").Value <> "" Then xArt = Range("xlasErrRef").Value
+    xLib = 1: errLvl = xArt: Call fndJunk(errLvl): If errLvl = 1 Then GoTo EndMacro Else Call fndLibs(xLib): Call rtnSpecial(xArt)
+    CHECKLIB = Application.Run(xLib, (xArt)): If Range("xlasErrRef").Value2 <> "" Then xArt = Range("xlasErrRef").Value2
     
 OutsideWb:
-If Range("MAS18").Value = vbNullString Then Range("MAS18").Name = "xlasErrRef"
+If Range("MAS18").Value2 = vbNullString Then Range("MAS18").name = "xlasErrRef"
     If InStr(1, xArt, "(*Err)") Then '//Check for not found error...
     SEARCHLIB = 2
     Do Until InStr(1, xArt, "(*Err)") = False '//Search for library if error found...
     If SEARCHLIB > 100 Then GoTo EndMacro
     xArt = Replace(xArt, "(*Err)", vbNullString)
     xLib = SEARCHLIB
-    Call findLib(xLib)
+    Call fndLibs(xLib)
     On Error GoTo ReSearchLib
-    Range("xlasErrRef").Value = vbNullString '//reset error reference
-    FOUNDLIB = Application.Run(xLib, (xArt)): xArt = Range("xlasErrRef").Value
+    Range("xlasErrRef").Value2 = vbNullString '//reset error reference
+    FOUNDLIB = Application.Run(xLib, (xArt)): xArt = Range("xlasErrRef").Value2
     If InStr(1, xArt, "(*Err)") = False Then Exit Function
 ReSearchLib:
 Err.Clear
@@ -1496,9 +1496,9 @@ If Range("xlasGlobalControl").Value = 1 Then Call modStack(xArt): Exit Function 
 
 '//Clear runtime block memory addresses
 Range("MAA1:MAK5000").ClearContents
-If Range("xlasLocalStatic").Value <> 1 Then Range("MAL1:MAL5000").ClearContents
+If Range("xlasLocalStatic").Value2 <> 1 Then Range("MAL1:MAL5000").ClearContents
 Range("MAM1:MAR5000").ClearContents
-If Range("xlasLocalContain").Value = 1 Then Range("MAS1:MAS5000").ClearContents
+If Range("xlasLocalContain").Value2 = 1 Then Range("MAS1:MAS5000").ClearContents
 Range("MAT1:MAZ5000").ClearContents
 
 End Function
@@ -1513,13 +1513,13 @@ Dim lRow As Long
 lRow = Cells(Rows.Count, "MAF").End(xlUp).Row
 
 '//Set article to top of runtime stack if empty
-If Range("MAF1").Value = vbNullString Then
+If Range("MAF1").Value2 = vbNullString Then
 Else
 '//If block space isn't empty push stack down 1 block
 Range("MAF1:MAF" & lRow).Copy Destination:=Range("MAF2:MAF" & lRow + 1)
 End If
 
-Range("MAF1").Value = xArt: Range("MAE1").Value = 0
+Range("MAF1").Value2 = xArt: Range("MAE1").Value2 = 0
 
 End Function
 Public Function modArtD$(xArt)
@@ -1588,6 +1588,12 @@ End Function
 '//
 '//         CHANGE LOG
 '/\_________________________________________________________________________________________________________________________
+'
+' Version 1.1.0
+'
+' [ Date: 5/11/2022 ]
+'
+' (1): Code optimization, function renaming, etc.
 '
 '
 ' Version 1.0.9
@@ -1740,7 +1746,7 @@ End Function
 ' [ Date 2/28/2022 ]
 '
 '
-' (1): Adjusted the "findEnvironment" function to now find the applications "runtime block" (Worksheet hosting xlas memory/states).
+' (1): Adjusted the "fndEnvironment" function to now find the applications "runtime block" (Worksheet hosting xlas memory/states).
 ' ***Changed it in a way to allow editing the name of the worksheet w/o it affecting the current runtime block
 '
 ' (2): Created 3 functions to deal w/ cleaning up an article during parsing (modArtP, modArtQ, modArtS)
@@ -1845,9 +1851,9 @@ End Function
 '
 ' (1): Added change log, & license information & version #
 '
-' (2): Created "findEnvironment" function to find the runtime environment while running xlAppScript
+' (2): Created "fndEnvironment" function to find the runtime environment while running xlAppScript
 '
-' (3): Created "findJunk" function to remove unwanted data before getting parsed further
+' (3): Created "fndJunk" function to remove unwanted data before getting parsed further
 '
 ' (4): Added labeling for most functions & their purpose
 '
