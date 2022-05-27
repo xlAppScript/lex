@@ -3,7 +3,7 @@ Public Function lexKey(ByVal xArt As String) As Byte
 '/\______________________________________________________________________________________________________________________
 '//
 '//     xlAppScript Lexer
-'//        Version: 1.1.0
+'//        Version: 1.1.1
 '/\_____________________________________________________________________________________________________________________________
 '//
 '//     License Information:
@@ -25,7 +25,7 @@ Public Function lexKey(ByVal xArt As String) As Byte
 '//
 '/\_____________________________________________________________________________________________________________________________
 '//
-'//     Latest Revision: 5/11/2022
+'//     Latest Revision: 5/24/2022
 '/\_____________________________________________________________________________________________________________________________
 '//
 '//     Developer(s): anz7re
@@ -1375,22 +1375,21 @@ Public Function fndWindow(xWin) As Object
 Dim appEnv, appBlk As String
 Call fndEnvironment(appEnv, appBlk)
 
-'//Mainly for keeping track of when we use the Ctrl Box and need to reset the Window number back...
-Workbooks(appEnv).Worksheets(appBlk).Range("xlasWinFormLast").Value2 = Workbooks(appEnv).Worksheets(appBlk).Range("xlasWinForm").Value2
-
 '//Check for current running window
 '//
-'//eTweetXL: Main Windows
+'//eTweetXL: WinForms
 If Workbooks(appEnv).Worksheets(appBlk).Range("xlasWinForm").Value2 = 1 Then Set xWin = ETWEETXLHOME: Exit Function
 If Workbooks(appEnv).Worksheets(appBlk).Range("xlasWinForm").Value2 = 2 Then Set xWin = ETWEETXLSETUP: Exit Function
 If Workbooks(appEnv).Worksheets(appBlk).Range("xlasWinForm").Value2 = 3 Then Set xWin = ETWEETXLPOST: Exit Function
 If Workbooks(appEnv).Worksheets(appBlk).Range("xlasWinForm").Value2 = 4 Then Set xWin = ETWEETXLQUEUE: Exit Function
 If Workbooks(appEnv).Worksheets(appBlk).Range("xlasWinForm").Value2 = 5 Then Set xWin = ETWEETXLAPISETUP: Exit Function
-'//eTweetXL: Post Boxes
+'//eTweetXL: Input Fields
 If Workbooks(appEnv).Worksheets(appBlk).Range("xlasWinForm").Value2 = 31 Then Set xWin = ETWEETXLPOST.PostBox: Exit Function
 If Workbooks(appEnv).Worksheets(appBlk).Range("xlasWinForm").Value2 = 41 Then Set xWin = ETWEETXLQUEUE.PostBox: Exit Function
-'//Control Box: Main Windows
+'//Control Box: WinForms
 If Workbooks(appEnv).Worksheets(appBlk).Range("xlasWinForm").Value2 = 10 Then Set xWin = CTRLBOX: Exit Function
+'//Control Box: Input Fields
+If Workbooks(appEnv).Worksheets(appBlk).Range("xlasWinForm").Value2 = 11 Then Set xWin = CTRLBOX.CtrlBoxWindow: Exit Function '5/24/2022
 
 End Function
 Public Function fndRunTool(xTool) As Object
@@ -1403,16 +1402,16 @@ Public Function fndRunTool(xTool) As Object
 Dim appEnv, appBlk As String
 Call fndEnvironment(appEnv, appBlk)
 
-'//Check for current running window
+'//Check for current running tool
 '//
-'//eTweetXL Run Tools
+'//eTweetXL
 If Workbooks(appEnv).Worksheets(appBlk).Range("xlasWinForm").Value2 = 1 Then Set xTool = ETWEETXLHOME.xlFlowStrip
 If Workbooks(appEnv).Worksheets(appBlk).Range("xlasWinForm").Value2 = 2 Then Set xTool = ETWEETXLSETUP.xlFlowStrip
 If Workbooks(appEnv).Worksheets(appBlk).Range("xlasWinForm").Value2 = 3 Then Set xTool = ETWEETXLPOST.xlFlowStrip
 If Workbooks(appEnv).Worksheets(appBlk).Range("xlasWinForm").Value2 = 4 Then Set xTool = ETWEETXLQUEUE.xlFlowStrip
 
-'//CTRL Box Run Tools
-If Workbooks(appEnv).Worksheets(appBlk).Range("xlasWinForm").Value2 = 10 Then Set xTool = CTRLBOX.CtrlBoxWindow
+'//Control Box
+If Workbooks(appEnv).Worksheets(appBlk).Range("xlasWinForm").Value2 = 11 Then Set xTool = CTRLBOX.CtrlBoxWindow
 
 End Function
 Private Function runScript$(xArt)
@@ -1588,6 +1587,14 @@ End Function
 '//
 '//         CHANGE LOG
 '/\_________________________________________________________________________________________________________________________
+'
+' Version 1.1.1
+'
+' [ Date: 5/24/2022 ]
+'
+' (1): Made minor adjustments to WinForm #'s in "fndWindow" & "fndRunTool" functions
+'
+'
 '
 ' Version 1.1.0
 '
