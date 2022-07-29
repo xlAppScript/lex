@@ -25,7 +25,7 @@ Public Function lexKey(ByVal xArt As String) As Byte
 '//
 '/\_____________________________________________________________________________________________________________________________
 '//
-'//     Latest Revision: 6/21/2022
+'//     Latest Revision: 6/28/2022
 '/\_____________________________________________________________________________________________________________________________
 '//
 '//     Developer(s): anz7re
@@ -43,10 +43,10 @@ Dim C As Byte: Dim E As Byte
 C = 0: mPtr = 0: cPtr = 0: xPtr = 0: xPtrH = 0: R = 0: X = 0
 '//=============================================================
 '//Set runtime environment...
-Call fndEnvironment(appEnv, appBlk)
+Call getEnvironment(appEnv, appBlk)
 '//=============================================================
 '//Check for run tool...
-Dim xTool As Object: Call fndRunTool(xTool)
+Dim xTool As Object: Call getRunTool(xTool)
 '//=============================================================
 '//Set Article from run tool code if found...
 If Not xTool Is Nothing Then If xArt = vbNullString Then xArt = xTool.Value
@@ -269,14 +269,14 @@ Public Function kinSet$(xArt)
 Dim X As Long
 '//Find application environment & block
 Dim appEnv, appBlk As String
-Call fndEnvironment(appEnv, appBlk)
+Call getEnvironment(appEnv, appBlk)
 
         lRow = Workbooks(appEnv).Worksheets(appBlk).Cells(Rows.Count, "MAA").End(xlUp).Row
         
         For X = 0 To lRow
 ReKin:
         If InStr(1, xArt, Workbooks(appEnv).Worksheets(appBlk).Range("xlasKinLabel").Offset(X, 0).Value2, vbTextCompare) Then
-        If InStr(1, xArt, "@env", vbTextCompare) Then Call fndEnvironmentVars(xArt) '//environment variable check
+        If InStr(1, xArt, "@env", vbTextCompare) Then Call getEnvironmentVars(xArt) '//environment variable check
     
                         If Workbooks(appEnv).Worksheets(appBlk).Range("xlasKinValueMod").Offset(X, 0).Value2 <> vbNullString Or _
                         InStr(1, xArt, "=") Then
@@ -343,7 +343,7 @@ Public Function kinExpand$(xArt)
         Dim E As Byte
         xTest = xArt
         Dim appEnv, appBlk As String
-        Call fndEnvironment(appEnv, appBlk)
+        Call getEnvironment(appEnv, appBlk)
         
         '//extract...
         xTestArr = Split(xTest, ",#!")
@@ -1024,7 +1024,7 @@ If UBound(xPtrArr) = 12 Then xPtr = xPtrArr(9): xPtrH = xPtrArr(10): mPtr = xPtr
 If UBound(xPtrArr) = 16 Then xPtr = xPtrArr(13): xPtrH = xPtrArr(14): mPtr = xPtrArr(15): cPtr = xPtrArr(16)
 '//=============================================================
 
-Call fndEnvironment(appEnv, appBlk)
+Call getEnvironment(appEnv, appBlk)
 
 xLetArr = Split(xArtArr(xPtrH), "let ", , vbTextCompare)
 
@@ -1185,7 +1185,7 @@ End If
 xArt = xArtH
 
 End Function
-Public Function fndChar$(xArt)
+Public Function getChar$(xArt)
 
 '/\__________________________________________________________________________
 '//
@@ -1214,7 +1214,7 @@ Loop
 xChar = xArt
 
 End Function
-Public Function fndEnvironment$(appEnv, appBlk)
+Public Function getEnvironment$(appEnv, appBlk)
 
 '/\__________________________________________________________________________
 '//
@@ -1253,7 +1253,7 @@ For Each B In Workbooks(appEnv).Sheets
 appBlk = appBlk: Range("xlasBlock").Value2 = appBlk: Range("xlasEnvironment").Value2 = appEnv: Exit Function
 
 End Function
-Public Function fndEnvironmentVars$(xArt)
+Public Function getEnvironmentVars$(xArt)
 
 '/\__________________________________________________________________________
 '//
@@ -1300,7 +1300,7 @@ If InStr(1, xArt, "@envuser", vbTextCompare) Then xArt = Replace(xArt, "@envuser
 If InStr(1, xArt, "@envwindir", vbTextCompare) Then xArt = Replace(xArt, "@envwindir", Environ("windir"), , , vbTextCompare)
 
 End Function
-Public Function fndJunk%(errLvl)
+Public Function getJunk%(errLvl)
 
 '/\________________________________________________________________________________
 '//
@@ -1347,7 +1347,7 @@ If Left(xArt, Len(xArt) - Len(xArt) + 1) = "}" Then errLvl = 1: Exit Function
 If Left(xArt, Len(xArt) - Len(xArt) + 2) = "if" Then errLvl = 1: Exit Function
 
 End Function
-Private Function fndLibs$(xLib)
+Private Function getLibs$(xLib)
 
 '/\______________________________________________________________________________________
 '//
@@ -1355,39 +1355,12 @@ Private Function fndLibs$(xLib)
 '/\______________________________________________________________________________________
 
 Dim appEnv, appBlk As String
-Call fndEnvironment(appEnv, appBlk)
+Call getEnvironment(appEnv, appBlk)
 
 xLib = "xlAppScript_" & Workbooks(appEnv).Worksheets(appBlk).Range("xlasLib").Offset(xLib, 0).Value2 & ".runLib"
 
 End Function
-Public Function fndWindow(xWin) As Object
-
-'/\__________________________________________________________________________
-'//
-'//     A function for finding the current active Window/UserForm object
-'/\__________________________________________________________________________
-
-Dim appEnv, appBlk As String
-Call fndEnvironment(appEnv, appBlk)
-
-'//Check for current running window
-'//
-'//eTweetXL: WinForms
-If Workbooks(appEnv).Worksheets(appBlk).Range("xlasWinForm").Value2 = 1 Then Set xWin = ETWEETXLHOME: Exit Function
-If Workbooks(appEnv).Worksheets(appBlk).Range("xlasWinForm").Value2 = 2 Then Set xWin = ETWEETXLSETUP: Exit Function
-If Workbooks(appEnv).Worksheets(appBlk).Range("xlasWinForm").Value2 = 3 Then Set xWin = ETWEETXLPOST: Exit Function
-If Workbooks(appEnv).Worksheets(appBlk).Range("xlasWinForm").Value2 = 4 Then Set xWin = ETWEETXLQUEUE: Exit Function
-If Workbooks(appEnv).Worksheets(appBlk).Range("xlasWinForm").Value2 = 5 Then Set xWin = ETWEETXLAPISETUP: Exit Function
-'//eTweetXL: Input Fields
-If Workbooks(appEnv).Worksheets(appBlk).Range("xlasWinForm").Value2 = 31 Then Set xWin = ETWEETXLPOST.PostBox: Exit Function
-If Workbooks(appEnv).Worksheets(appBlk).Range("xlasWinForm").Value2 = 41 Then Set xWin = ETWEETXLQUEUE.PostBox: Exit Function
-'//Control Box: WinForms
-If Workbooks(appEnv).Worksheets(appBlk).Range("xlasWinForm").Value2 = 10 Then Set xWin = CTRLBOX: Exit Function
-'//Control Box: Input Fields
-If Workbooks(appEnv).Worksheets(appBlk).Range("xlasWinForm").Value2 = 11 Then Set xWin = CTRLBOX.CtrlBoxWindow: Exit Function '5/24/2022
-
-End Function
-Public Function fndRunTool(xTool) As Object
+Public Function getRunTool(xTool) As Object
 
 '/\__________________________________________________________________________
 '//
@@ -1395,17 +1368,64 @@ Public Function fndRunTool(xTool) As Object
 '/\__________________________________________________________________________
 
 Dim appEnv, appBlk As String
-Call fndEnvironment(appEnv, appBlk)
+Call getEnvironment(appEnv, appBlk)
 
 '//Check for current running tool
 '//
 '//eTweetXL: xlFlowStrip
-If Workbooks(appEnv).Worksheets(appBlk).Range("xlasWinForm").Value2 = 1 Then Set xTool = ETWEETXLHOME.xlFlowStrip
-If Workbooks(appEnv).Worksheets(appBlk).Range("xlasWinForm").Value2 = 2 Then Set xTool = ETWEETXLSETUP.xlFlowStrip
-If Workbooks(appEnv).Worksheets(appBlk).Range("xlasWinForm").Value2 = 3 Then Set xTool = ETWEETXLPOST.xlFlowStrip
-If Workbooks(appEnv).Worksheets(appBlk).Range("xlasWinForm").Value2 = 4 Then Set xTool = ETWEETXLQUEUE.xlFlowStrip
+If Workbooks(appEnv).Worksheets(appBlk).Range("xlasWinForm").Value2 = 11 Then Set xTool = ETWEETXLHOME.xlFlowStrip
+If Workbooks(appEnv).Worksheets(appBlk).Range("xlasWinForm").Value2 = 12 Then Set xTool = ETWEETXLSETUP.xlFlowStrip
+If Workbooks(appEnv).Worksheets(appBlk).Range("xlasWinForm").Value2 = 13 Then Set xTool = ETWEETXLPOST.xlFlowStrip
+If Workbooks(appEnv).Worksheets(appBlk).Range("xlasWinForm").Value2 = 14 Then Set xTool = ETWEETXLQUEUE.xlFlowStrip
 '//Control Box: Input Fields
-If Workbooks(appEnv).Worksheets(appBlk).Range("xlasWinForm").Value2 = 11 Then Set xTool = CTRLBOX.CtrlBoxWindow
+If Workbooks(appEnv).Worksheets(appBlk).Range("xlasWinForm").Value2 = 101 Then Set xTool = CTRLBOX.CtrlBoxWindow
+'//AutomateXL: xlFlowStrip
+If Workbooks(appEnv).Worksheets(appBlk).Range("xlasWinForm").Value2 = 19 Then Set xTool = XLMAPPER.xlFlowStrip
+
+End Function
+Public Function getWindow(xWin) As Object
+
+'/\__________________________________________________________________________
+'//
+'//     A function for finding the current active Window/UserForm object
+'/\__________________________________________________________________________
+
+Dim appEnv, appBlk As String
+Call getEnvironment(appEnv, appBlk)
+
+'//Check for current running window
+'//
+'//eTweetXL: WinForms
+If Workbooks(appEnv).Worksheets(appBlk).Range("xlasWinForm").Value2 = 11 Then Set xWin = ETWEETXLHOME: Exit Function
+If Workbooks(appEnv).Worksheets(appBlk).Range("xlasWinForm").Value2 = 12 Then Set xWin = ETWEETXLSETUP: Exit Function
+If Workbooks(appEnv).Worksheets(appBlk).Range("xlasWinForm").Value2 = 13 Then Set xWin = ETWEETXLPOST: Exit Function
+If Workbooks(appEnv).Worksheets(appBlk).Range("xlasWinForm").Value2 = 14 Then Set xWin = ETWEETXLQUEUE: Exit Function
+If Workbooks(appEnv).Worksheets(appBlk).Range("xlasWinForm").Value2 = 15 Then Set xWin = ETWEETXLAPISETUP: Exit Function
+'//eTweetXL: Input Fields
+If Workbooks(appEnv).Worksheets(appBlk).Range("xlasWinForm").Value2 = 31 Then Set xWin = ETWEETXLPOST.PostBox: Exit Function
+If Workbooks(appEnv).Worksheets(appBlk).Range("xlasWinForm").Value2 = 41 Then Set xWin = ETWEETXLQUEUE.PostBox: Exit Function
+'//Control Box: WinForms
+If Workbooks(appEnv).Worksheets(appBlk).Range("xlasWinForm").Value2 = 100 Then Set xWin = CTRLBOX: Exit Function
+'//Control Box: Input Fields
+If Workbooks(appEnv).Worksheets(appBlk).Range("xlasWinForm").Value2 = 101 Then Set xWin = CTRLBOX.CtrlBoxWindow: Exit Function
+'//AutomateXL: WinForms
+If Workbooks(appEnv).Worksheets(appBlk).Range("xlasWinForm").Value2 = 18 Then Set xWin = AUTOMATEXLHOME: Exit Function
+If Workbooks(appEnv).Worksheets(appBlk).Range("xlasWinForm").Value2 = 19 Then Set xWin = XLMAPPER: Exit Function
+If Workbooks(appEnv).Worksheets(appBlk).Range("xlasWinForm").Value2 = 20 Then Set xWin = XLMAPPERCTRLR: Exit Function
+
+End Function
+Public Function setWindow%(xWin)
+
+'/\__________________________________________________________________________
+'//
+'//     A function for setting the current & last active Window/UserForm #
+'/\__________________________________________________________________________
+'
+Dim appEnv, appBlk As String
+Call getEnvironment(appEnv, appBlk)
+
+Workbooks(appEnv).Worksheets(appBlk).Range("xlasWinFormLast").Value2 = Workbooks(appEnv).Worksheets(appBlk).Range("xlasWinForm").Value2
+Workbooks(appEnv).Worksheets(appBlk).Range("xlasWinForm").Value2 = xWin
 
 End Function
 Private Function runScript$(xArt)
@@ -1419,18 +1439,18 @@ Private Function runScript$(xArt)
     
     '//Check first library location...
     On Error GoTo OutsideWb
-    xLib = 1: errLvl = xArt: Call fndJunk(errLvl): If errLvl = 1 Then GoTo ErrRef Else Call fndLibs(xLib): Call rtnSpecial(xArt)
+    xLib = 1: errLvl = xArt: Call getJunk(errLvl): If errLvl = 1 Then GoTo ErrRef Else Call getLibs(xLib): Call rtnSpecial(xArt)
     CHECKLIB = Application.Run(xLib, (xArt)): If Range("xlasErrRef").Value2 <> "" Then xArt = Range("xlasErrRef").Value2
     
 OutsideWb:
-If Range("MAS18").Value2 = vbNullString Then Range("MAS18").name = "xlasErrRef"
+If Range("MAS23").Value2 = vbNullString Then Range("MAS23").name = "xlasErrRef"
     If InStr(1, xArt, "(*Err)") Then '//Check for not found error...
     SEARCHLIB = 2
     Do Until InStr(1, xArt, "(*Err)") = False '//Search for library if error found...
     If SEARCHLIB > 100 Then GoTo ErrRef
     xArt = Replace(xArt, "(*Err)", vbNullString)
     xLib = SEARCHLIB
-    Call fndLibs(xLib)
+    Call getLibs(xLib)
     On Error GoTo ReSearchLib
     Range("xlasErrRef").Value2 = vbNullString '//reset error reference
     FOUNDLIB = Application.Run(xLib, (xArt)): xArt = Range("xlasErrRef").Value2
@@ -1583,11 +1603,25 @@ End Function
 '/\_________________________________________________________________________________________________________________________
 '
 '
+' Version 1.1.4
+'
+' [ Date: 6/28/2022 ]
+'
+' (1): Changed "fnd" function prefixes to "get"
+'
+' (2): Added "setWindow" function for setting current & last WinForm #'s when activating an application Window
+'
+' (3): Updated "runScript" function to set "xlasErrRef" block address to it's assigned cell from setup
+'
+' (4): Additions (AutomateXL) & changes to application "WinForm" #'s
+'
+'
 ' Version 1.1.3
 '
 ' [ Date: 6/21/2022 ]
 '
 ' (1): Fixed issue where "goto" statement would cause an error b/c of invalid ".Value2" as ".Value22"
+'
 '
 ' Version 1.1.2
 '
@@ -1885,4 +1919,3 @@ End Function
 
 
 
-6
