@@ -3,7 +3,7 @@ Public Function lexKey(ByVal xArt As String) As Byte
 '/\______________________________________________________________________________________________________________________
 '//
 '//     xlAppScript Lexer
-'//        Version: 1.1.3
+'//        Version: 1.1.4
 '/\_____________________________________________________________________________________________________________________________
 '//
 '//     License Information:
@@ -25,7 +25,7 @@ Public Function lexKey(ByVal xArt As String) As Byte
 '//
 '/\_____________________________________________________________________________________________________________________________
 '//
-'//     Latest Revision: 6/28/2022
+'//     Latest Revision: 8/1/2022
 '/\_____________________________________________________________________________________________________________________________
 '//
 '//     Developer(s): anz7re
@@ -1395,7 +1395,7 @@ Call getEnvironment(appEnv, appBlk)
 
 '//Check for current running window
 '//
-'//eTweetXL: WinForms
+'//eTweetXL: Windows
 If Workbooks(appEnv).Worksheets(appBlk).Range("xlasWinForm").Value2 = 11 Then Set xWin = ETWEETXLHOME: Exit Function
 If Workbooks(appEnv).Worksheets(appBlk).Range("xlasWinForm").Value2 = 12 Then Set xWin = ETWEETXLSETUP: Exit Function
 If Workbooks(appEnv).Worksheets(appBlk).Range("xlasWinForm").Value2 = 13 Then Set xWin = ETWEETXLPOST: Exit Function
@@ -1404,11 +1404,11 @@ If Workbooks(appEnv).Worksheets(appBlk).Range("xlasWinForm").Value2 = 15 Then Se
 '//eTweetXL: Input Fields
 If Workbooks(appEnv).Worksheets(appBlk).Range("xlasWinForm").Value2 = 31 Then Set xWin = ETWEETXLPOST.PostBox: Exit Function
 If Workbooks(appEnv).Worksheets(appBlk).Range("xlasWinForm").Value2 = 41 Then Set xWin = ETWEETXLQUEUE.PostBox: Exit Function
-'//Control Box: WinForms
+'//Control Box: Windows
 If Workbooks(appEnv).Worksheets(appBlk).Range("xlasWinForm").Value2 = 100 Then Set xWin = CTRLBOX: Exit Function
 '//Control Box: Input Fields
 If Workbooks(appEnv).Worksheets(appBlk).Range("xlasWinForm").Value2 = 101 Then Set xWin = CTRLBOX.CtrlBoxWindow: Exit Function
-'//AutomateXL: WinForms
+'//AutomateXL: Windows
 If Workbooks(appEnv).Worksheets(appBlk).Range("xlasWinForm").Value2 = 18 Then Set xWin = AUTOMATEXLHOME: Exit Function
 If Workbooks(appEnv).Worksheets(appBlk).Range("xlasWinForm").Value2 = 19 Then Set xWin = XLMAPPER: Exit Function
 If Workbooks(appEnv).Worksheets(appBlk).Range("xlasWinForm").Value2 = 20 Then Set xWin = XLMAPPERCTRLR: Exit Function
