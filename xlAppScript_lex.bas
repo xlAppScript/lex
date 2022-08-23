@@ -3,7 +3,7 @@ Public Function lexKey(ByVal xArt As String) As Byte
 '/\______________________________________________________________________________________________________________________
 '//
 '//     xlAppScript Lexer
-'//        Version: 1.1.5
+'//        Version: 1.1.6
 '/\_____________________________________________________________________________________________________________________________
 '//
 '//     License Information:
@@ -25,7 +25,7 @@ Public Function lexKey(ByVal xArt As String) As Byte
 '//
 '/\_____________________________________________________________________________________________________________________________
 '//
-'//     Latest Revision: 8/8/2022
+'//     Latest Revision: 8/11/2022
 '/\_____________________________________________________________________________________________________________________________
 '//
 '//     Developer(s): anz7re
@@ -195,49 +195,49 @@ Next
                         End If
 '//=============================================================
     '//goto check...
-    If C = 1 Then xArtArr(xPtr) = xArt: xArt = vbNullString: For X = 0 To UBound(xArtArr): xArt = xArt & xArtArr(X) & "[:]": Next: _
+    If C = 1 Then xArtArr(xPtr) = xArtArrH(xPtr): xArt = vbNullString: For X = 0 To UBound(xArtArr): xArt = xArt & xArtArr(X) & "[:]": Next: _
     xArt = xArt & "[,]" & xPtr & "[,]" & xPtrH & "[,]" & mPtr & "[,]" & cPtr: _
     E = 0: Call gotoSet(xArt, E): tArr = Split(xArt, "[:]"): xArt = tArr(0): _
     xPtrArr = Split(tArr(1), "[,]"): xPtr = xPtrArr(1): xPtrH = xPtrArr(2): mPtr = xPtrArr(3): cPtr = xPtrArr(4): _
     C = 0: xArtArr(xPtr) = xArtArrH(xPtr): GoTo RunCheck
     '//=============================================================
     '//if check...
-    If C = 3 Then xArtArr(xPtr) = xArt: xArt = vbNullString: For X = 0 To UBound(xArtArr): xArt = xArt & xArtArr(X) & "[:]": Next: _
+    If C = 3 Then xArtArr(xPtr) = xArtArrH(xPtr): xArt = vbNullString: For X = 0 To UBound(xArtArr): xArt = xArt & xArtArr(X) & "[:]": Next: _
     xArt = xArt & "[,]" & xPtr & "[,]" & xPtrH & "[,]" & mPtr & "[,]" & cPtr: _
     E = 0: Call ifSet(xArt, E): tArr = Split(xArt, "[:]"): xArt = tArr(0): _
     xPtrArr = Split(tArr(1), "[,]"): xPtr = xPtrArr(1): xPtrH = xPtrArr(2): mPtr = xPtrArr(3): cPtr = xPtrArr(4): _
     C = 0: xArtArr(xPtr) = xArtArrH(xPtr): GoTo ParseCheck
     '//=============================================================
     '//do check...
-    If C = 5 Then xArtArr(xPtr) = xArt: xArt = vbNullString: For X = 0 To UBound(xArtArr): xArt = xArt & xArtArr(X) & "[:]": Next: _
+    If C = 5 Then xArtArr(xPtr) = xArtArrH(xPtr): xArt = vbNullString: For X = 0 To UBound(xArtArr): xArt = xArt & xArtArr(X) & "[:]": Next: _
     xArt = xArt & "[,]" & xPtr & "[,]" & xPtrH & "[,]" & mPtr & "[,]" & cPtr: _
     E = 0: Call doSet(xArt, E): tArr = Split(xArt, "[:]"): xArt = tArr(0): _
     xPtrArr = Split(tArr(1), "[,]"): xPtr = xPtrArr(1): xPtrH = xPtrArr(2): mPtr = xPtrArr(3): cPtr = xPtrArr(4): _
     C = 0: xArtArr(xPtr) = xArtArrH(xPtr): GoTo ParseCheck
     '//=============================================================
     '//libcall check...
-    If C = 9 Then xArtArr(xPtr) = xArt: xArt = vbNullString: For X = 0 To UBound(xArtArr): xArt = xArt & xArtArr(X) & "[:]": Next: _
+    If C = 9 Then xArtArr(xPtr) = xArtArrH(xPtr): xArt = vbNullString: For X = 0 To UBound(xArtArr): xArt = xArt & xArtArr(X) & "[:]": Next: _
     xArt = xArt & "[,]" & xPtr & "[,]" & xPtr & "[,]" & mPtr & "[,]" & cPtr: _
     E = 0: Call libcallSet(xArt, E): tArr = Split(xArt, "[:]"): xArt = tArr(0): _
     xPtrArr = Split(tArr(1), "[,]"): xPtr = xPtrArr(1): xPtrH = xPtrArr(2): mPtr = xPtrArr(3): cPtr = xPtrArr(4): _
     C = 0: xArtArr(xPtr) = xArtArrH(xPtr): GoTo ParseCheck
     '//=============================================================
     '//let check...
-    If C = 11 Then xArtArr(xPtr) = xArt: xArt = vbNullString: For X = 0 To UBound(xArtArr): xArt = xArt & xArtArr(X) & "[:]": Next: _
+    If C = 11 Then xArtArr(xPtr) = xArtArrH(xPtr): xArt = vbNullString: For X = 0 To UBound(xArtArr): xArt = xArt & xArtArr(X) & "[:]": Next: _
     xArt = xArt & "[,]" & xPtr & "[,]" & mPtr & "[,]" & mPtr & "[,]" & cPtr: _
     E = 0: Call letSet(xArt, E): tArr = Split(xArt, "[:]"): xArt = tArr(0): _
     xPtrArr = Split(tArr(1), "[,]"): xPtr = xPtrArr(1): xPtrH = xPtrArr(2): mPtr = xPtrArr(3): cPtr = xPtrArr(4): _
     C = 0: xArtArr(xPtr) = xArtArrH(xPtr): GoTo ParseCheck
     '//=============================================================
     '//end check...
-    If C = 99 Then xArtArr(xPtr) = xArt: Call endSet(xArt): GoTo RunCheck
+    If C = 99 Then xArtArr(xPtr) = xArtArrH(xPtr): Call endSet(xArt): GoTo RunCheck
     '//=============================================================
     '//variable check...
     If InStr(1, xArt, "@") Then Call kinSet(xArt) '//set variables...
     '//=============================================================
     '//Run Article...
     Call runScript(xArt)
-    If xArt = "(*Err)" Then GoTo ErrRef
+    If xArt = "*/ERR" Then GoTo ErrRef
     '//=============================================================
     End If
         End If
@@ -776,7 +776,7 @@ If C = 99 Then xArtArr(xPtr) = xArt: Call endSet(xArt): GoTo RtnArt
 
     If InStr(1, xArt, "@") Then Call kinSet(xArt) '//set variables...
     Call runScript(xArt) '//run article...
-    If xArt = "(*Err)" Then GoTo RtnArt
+    If xArt = "*/ERR" Then GoTo RtnArt
     
     xPtrH = xPtrH + 1
     
@@ -972,7 +972,7 @@ If C = 99 Then xArtArr(xPtr) = xArt: Call endSet(xArt): GoTo RtnArt
 '//=============================================================
     If InStr(1, xArt, "@") Then Call kinSet(xArt) '//set variables...
     Call runScript(xArt) '//run article...
-    If xArt = "(*Err)" Then GoTo RtnArt
+    If xArt = "*/ERR" Then GoTo RtnArt
     
     xPtrH = xPtrH + 1
     
@@ -1207,7 +1207,7 @@ xLetters = Split(xChar, ",")
 xLast = UBound(xLetters) - LBound(xLetters)
 
 Do Until X = xLast
-If InStr(1, xArt, xLetters(X)) Then xArt = "(*Err)": Exit Function
+If InStr(1, xArt, xLetters(X)) Then xArt = "*/ERR": Exit Function
 X = X + 1
 Loop
 
@@ -1238,13 +1238,13 @@ Dim B, N As Object
 '//Environment not found or specified (Default)
 useThisEnv:
 Err.Clear
-If Range("xlasEnvironment").Value2 <> vbNullString Then appEnv = Range("xlasEnvironment").Value2 Else appEnv = ThisWorkbook.name
+If Range("xlasEnvironment").Value2 <> vbNullString Then appEnv = Range("xlasEnvironment").Value2 Else appEnv = ThisWorkbook.Name
 
 '//Find application runtime block...
 findBlock:
 For Each B In Workbooks(appEnv).Sheets
     For Each N In Workbooks(appEnv).Names
-        If N.name = "xlasEnvironment" Then appBlk = B.name: Range("xlasBlock").Value2 = appBlk: _
+        If N.Name = "xlasEnvironment" Then appBlk = B.Name: Range("xlasBlock").Value2 = appBlk: _
         Range("xlasEnvironment").Value2 = appEnv: Exit Function
             Next
                 Next
@@ -1445,21 +1445,21 @@ Private Function runScript$(xArt)
     CHECKLIB = Application.Run(xLib, (xArt)): If Range("xlasErrRef").Value2 <> "" Then xArt = Range("xlasErrRef").Value2
     
 OutsideWb:
-If Range("MAS23").Value2 = vbNullString Then Range("MAS23").name = "xlasErrRef"
-    If InStr(1, xArt, "(*Err)") Then '//Check for not found error...
+If Range("MAS23").Value2 = vbNullString Then Range("MAS23").Name = "xlasErrRef"
+    If InStr(1, xArt, "*/ERR") Then '//Check for not found error...
     SEARCHLIB = 2
-    Do Until InStr(1, xArt, "(*Err)") = False '//Search for library if error found...
+    Do Until InStr(1, xArt, "*/ERR") = False '//Search for library if error found...
     If SEARCHLIB > 100 Then GoTo ErrRef
-    xArt = Replace(xArt, "(*Err)", vbNullString)
+    xArt = Replace(xArt, "*/ERR", vbNullString)
     xLib = SEARCHLIB
     Call getLibs(xLib)
     On Error GoTo ReSearchLib
     Range("xlasErrRef").Value2 = vbNullString '//reset error reference
     FOUNDLIB = Application.Run(xLib, (xArt)): xArt = Range("xlasErrRef").Value2
-    If InStr(1, xArt, "(*Err)") = False Then Exit Function
+    If InStr(1, xArt, "*/ERR") = False Then Exit Function
 ReSearchLib:
 Err.Clear
-    xArt = xArt & "(*Err)"
+    xArt = xArt & "*/ERR"
         SEARCHLIB = SEARCHLIB + 1
             Loop
                 End If
@@ -1603,6 +1603,14 @@ End Function
 '//
 '//         CHANGE LOG
 '/\_________________________________________________________________________________________________________________________
+'
+'
+' Version 1.1.6
+'
+'
+'[ Date: 8/11/2022 ]
+'
+' (1): Fixed issue where lexer would loop infinitely when using multiple instructions
 '
 '
 ' Version 1.1.5
